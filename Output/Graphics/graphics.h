@@ -14,8 +14,6 @@
 #define DOWN 7
 #define DELETE 8
 
-#define EVENT_LOOP_SLEEP 100
-
 typedef struct graphics_t GUI;
 struct graphics_t{
   Display* dsp;
