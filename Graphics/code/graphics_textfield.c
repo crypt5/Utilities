@@ -23,17 +23,15 @@ void paint_textfield(GUI* g,WIDGET* w)
   if((w->status&STATUS_REPAINT)>0){
 
     if(w->width==0){
+      for(width=0;width<data->max_length;width++)
+	w->string[width]='A';
       w->width=XTextWidth(g->font,w->string,strlen(w->string))+6;
       w->height=g->font->ascent*2;
+      for(width=0;width<data->max_length;width++)
+	w->string[width]='\0';
       data->map=XCreatePixmap(g->dsp,g->mainWindow,w->width,3*w->height,24);
     }
-    else{
-      XCopyArea(g->dsp,data->map,g->mainWindow,g->draw,0,0,w->width,w->height,w->x,w->y);
-      XFreePixmap(g->dsp,data->map);
-      w->width=XTextWidth(g->font,w->string,strlen(w->string))+6;
-      w->height=g->font->ascent*2;
-      data->map=XCreatePixmap(g->dsp,g->mainWindow,w->width,w->height*3,24);
-    }
+   
     //not visible and background of whole thing
     XSetForeground(g->dsp,g->draw,g->bgColor);
     XFillRectangle(g->dsp,data->map,g->draw,0,0,w->width,w->height*3);
@@ -46,20 +44,17 @@ void paint_textfield(GUI* g,WIDGET* w)
 
     XFillRectangle(g->dsp,data->map,g->draw,0,w->height,w->width,w->height);
     XSetForeground(g->dsp,g->draw,g->blackColor);
-    XDrawRectangle(g->dsp,data->map,g->draw,0,w->height,w->width,w->height);
-    if(data->text_color>0){
-      XSetForeground(g->dsp,g->text,data->text_color);
-      XDrawString(g->dsp,data->map,g->text,4,w->height+w->height/2+w->height/4,w->string,strlen(w->string));
-      XSetForeground(g->dsp,g->text,g->blackColor);
-    }
-    else{
-      XSetForeground(g->dsp,g->text,g->blackColor);
-      XDrawString(g->dsp,data->map,g->text,4,w->height+w->height/2+w->height/4,w->string,strlen(w->string));
-      XSetForeground(g->dsp,g->text,g->blackColor);
-    }
+    XDrawRectangle(g->dsp,data->map,g->draw,0,w->height,w->width-1,w->height-1);
 
     // Not enabled
+     if(data->background_color>-1)
+       XSetForeground(g->dsp,g->draw,to_gray(data->background_color));
+    else
+      XSetForeground(g->dsp,g->draw, to_gray(g->whiteColor));
 
+    XFillRectangle(g->dsp,data->map,g->draw,0,w->height*2,w->width,w->height);
+    XSetForeground(g->dsp,g->draw,to_gray(g->blackColor));
+    XDrawRectangle(g->dsp,data->map,g->draw,0,w->height*2,w->width-1,w->height-1);
 
     // Debug print to file
     #ifdef DEBUG_PRINT_IMAGES
@@ -75,41 +70,41 @@ void paint_textfield(GUI* g,WIDGET* w)
     w->status=w->status&(~STATUS_REPAINT);
   }
 
-  if((w->status&STATUS_VISIBLE)==0)
+  if((w->status&STATUS_VISIBLE)==0){
     XCopyArea(g->dsp,data->map,g->mainWindow,g->draw,0,0,w->width,w->height,w->x,w->y);
-  else if((w->status&STATUS_ENABLE)==0)
+  }
+  else if((w->status&STATUS_ENABLE)==0){
     XCopyArea(g->dsp,data->map,g->mainWindow,g->draw,0,w->height*2,w->width,w->height,w->x,w->y);
-  else
-    XCopyArea(g->dsp,data->map,g->mainWindow,g->draw,0,w->height,w->width,w->height,w->x,w->y);
-
-
-    /*
-  if(data->background_color>-1)
-    XSetForeground(g->dsp,g->draw,(w->status&STATUS_ENABLE)>0 ? data->background_color : to_gray(data->background_color));
-  else
-    XSetForeground(g->dsp,g->draw,(w->status&STATUS_ENABLE)>0 ? g->whiteColor : to_gray(g->whiteColor));
-
-  XFillRectangle(g->dsp,g->mainWindow,g->draw,w->x,w->y,w->width,w->height);
-  XSetForeground(g->dsp,g->draw,(w->status&STATUS_ENABLE)>0 ? g->blackColor : to_gray(g->blackColor));
-  XDrawRectangle(g->dsp,g->mainWindow,g->draw,w->x,w->y,w->width,w->height);
-  if(data->text_color>0){
-    XSetForeground(g->dsp,g->text,(w->status&STATUS_ENABLE)>0 ? data->text_color : to_gray(data->text_color));
-    XDrawString(g->dsp,g->mainWindow,g->text,w->x+4,w->y+w->height/2+w->height/4,w->string,strlen(w->string));
-    XSetForeground(g->dsp,g->text,g->blackColor);
+    if(data->text_color>0){
+      XSetForeground(g->dsp,g->text, to_gray(data->text_color));
+      XDrawString(g->dsp,g->mainWindow,g->text,w->x+4,w->y+w->height/2+w->height/4,w->string,strlen(w->string));
+      XSetForeground(g->dsp,g->text,g->blackColor);
+    }
+    else{
+      XSetForeground(g->dsp,g->text, to_gray(g->blackColor));
+      XDrawString(g->dsp,g->mainWindow,g->text,w->x+4,w->y+w->height/2+w->height/4,w->string,strlen(w->string));
+      XSetForeground(g->dsp,g->text,g->blackColor);
+    }
   }
   else{
-    XSetForeground(g->dsp,g->text,(w->status&STATUS_ENABLE)>0 ? g->blackColor : to_gray(g->blackColor));
-    XDrawString(g->dsp,g->mainWindow,g->text,w->x+4,w->y+w->height/2+w->height/4,w->string,strlen(w->string));
-    XSetForeground(g->dsp,g->text,g->blackColor);
+    XCopyArea(g->dsp,data->map,g->mainWindow,g->draw,0,w->height,w->width,w->height,w->x,w->y);
+    if(data->text_color>0){
+      XSetForeground(g->dsp,g->text,(w->status&STATUS_ENABLE)>0 ? data->text_color : to_gray(data->text_color));
+      XDrawString(g->dsp,g->mainWindow,g->text,w->x+4,w->y+w->height/2+w->height/4,w->string,strlen(w->string));
+      XSetForeground(g->dsp,g->text,g->blackColor);
+    }
+    else{
+      XSetForeground(g->dsp,g->text,(w->status&STATUS_ENABLE)>0 ? g->blackColor : to_gray(g->blackColor));
+      XDrawString(g->dsp,g->mainWindow,g->text,w->x+4,w->y+w->height/2+w->height/4,w->string,strlen(w->string));
+      XSetForeground(g->dsp,g->text,g->blackColor);
+    }
   }
-    */
 }
 
 void paint_textfield_click(GUI* g, WIDGET* w)
 {
   int i;
-  struct textfield_data_t* data=NULL;
-  data=w->widget_data;
+  struct textfield_data_t* data=w->widget_data;
   if(data->editable==1){
     i=XTextWidth(g->font,"A",1);
     if(data->text_color>0){
@@ -180,7 +175,6 @@ void update_textfield(GUI* g,WIDGET* w, char c)
       printf("Unknown Control Operator: %d\n",c);
     }
   }
-  // Update the graphics
   paint_textfield(g,w);
   paint_textfield_click(g,w);
 }

@@ -10,7 +10,16 @@ GRAPHICS_SRC=$(wildcard Graphics/code/graphics_*.c)
 GRAPHICS_INC=-IGraphics/headers/
 GRAPHICS_OBJ=$(addprefix Graphics/objects/,$(notdir $(GRAPHICS_SRC:.c=.o)))
 
-build-all: config logger graphics
+LIBS=-lpthread -lgraphics -llogger -lconfig -lXpm
+RPATH=-Wl,-rpath,Output,-rpath,Output/Graphics
+XFLAGS=`pkg-config --cflags --libs x11`
+LINKCOM=-IOutput -LOutput -IOutput/Graphics -LOutput/Graphics
+
+build-all: config logger graphics test
+
+#Build Test code
+test: test.c
+	$(CC) $(CFLAGS) $(LINKCOM) $(RPATH) $(XFLAGS) test.c -o main $(LIBS)
 
 #Data Structure(s) Build
 link: $(STRUCT)link.c $(STRUCT)link.h
