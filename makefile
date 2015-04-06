@@ -10,12 +10,15 @@ GRAPHICS_SRC=$(wildcard Graphics/code/graphics_*.c)
 GRAPHICS_INC=-IGraphics/headers/
 GRAPHICS_OBJ=$(addprefix Graphics/objects/,$(notdir $(GRAPHICS_SRC:.c=.o)))
 
+IO_SRC=$(wildcard BBBio/*.c)
+IO_OBJ=$(IO_SRC:.c=.o)
+
 LIBS=-lpthread -lgraphics -llogger -lconfig -lXpm
 RPATH=-Wl,-rpath,Output,-rpath,Output/Graphics
 XFLAGS=`pkg-config --cflags --libs x11`
 LINKCOM=-IOutput -LOutput -IOutput/Graphics -LOutput/Graphics
 
-build-all: config logger graphics test
+build-all: config logger graphics BBBio test
 
 #Build Test code
 test: test.c
@@ -29,6 +32,15 @@ link: $(STRUCT)link.c $(STRUCT)link.h
 queue: $(STRUCT)queue.c $(STRUCT)queue.h
 	$(CC) $(CFLAGS) $(OFLAGS) $(STRUCT)queue.c -o $(STRUCT)queue.o
 	cp $(STRUCT)queue.h Output/queue.h
+
+#BBB gpio Library
+BBBio: $(IO_OBJ)
+	mkdir -p Output/BBBio
+	$(CC) -shared -o Output/BBBio/libBBBio.so $(IO_OBJ)
+	cp BBBio/*.h Output/BBBio
+
+$(IO_OBJ): $(IO_SRC)
+	$(CC) $(CFLAGS) $(OFLAGS) $(subst .o,.c,$@) -o $@
 
 #Config Builder
 config: link Config/config.c Config/config.h
