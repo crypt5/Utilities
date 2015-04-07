@@ -20,6 +20,7 @@ int main()
   GUI* g=NULL;
   WIDGET* text=NULL;
   WIDGET* but=NULL;
+  WIDGET* sep=NULL;
 
   g=init_gui();
   create_main_window(g,"Textbox Testing");
@@ -30,8 +31,13 @@ int main()
   but=create_button("Click me",10,50);
   set_button_callback(but,click,text);
 
+  sep=create_seperator(10,100,300);
+  set_seperator_color(sep,0x00FF00FF);
+  set_seperator_thickness(sep,5);
+
   add_to_main(g,text);
   add_to_main(g,but);
+  add_to_main(g,sep);
 
   show_main(g);
   while(gui_running(g)){

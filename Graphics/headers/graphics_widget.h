@@ -17,6 +17,7 @@
 #define TEXTFIELD 7
 #define PICTURE 8
 #define COMBOBOX 9
+#define SEPERATOR 10
 
 //Widget Action FLags (binary)
 #define NONE 0x00 
@@ -67,5 +68,6 @@ struct graphics_widget_t{
 #include "graphics_textfield.h"
 #include "graphics_picture.h"
 #include "graphics_combobox.h"
+#include "graphics_seperator.h"
 
 #endif

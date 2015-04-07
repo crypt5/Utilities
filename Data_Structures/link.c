@@ -223,7 +223,7 @@ void* list_get_pos(LIST* l,int index)
   }
   if(index>l->elements)
     return NULL;
- 
+
   temp=l->head;
   for(i=1;i<=index;i++){
     temp=temp->next;
