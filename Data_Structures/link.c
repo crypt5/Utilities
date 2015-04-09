@@ -29,13 +29,14 @@ LIST* list_init(void(*ufree)(void*),int(*ucomp)(void*,void*))
   }
   list->elements=0;
   list->head=NULL;
+  list->tail=NULL;
   list->the_free=ufree;
   list->the_comp=ucomp;
 
   return list;
 }
 
-void list_add(LIST* l,void* data)
+void list_add_tail(LIST* l,void* data)
 {
   struct list_node_t* node=NULL;
 
@@ -62,6 +63,38 @@ void list_add(LIST* l,void* data)
     l->tail->next=node;
     node->prev=l->tail;
     l->tail=node;
+  }
+
+  l->elements++;
+
+}
+
+void list_add_head(LIST* l, void* data)
+{
+  struct list_node_t* node=NULL;
+
+  if(l==NULL){
+    printf("Can't add to a NULL list\n");
+    exit(-1);
+  }
+
+  node=malloc(sizeof(struct list_node_t));
+
+  if(node==NULL){
+    printf("Node Malloc failed\n");
+    exit(-1);
+  }
+
+  node->next=NULL;
+  node->data=data;
+
+  if(l->elements==0){
+    l->head=node;
+    l->tail=node;
+  }
+  else{
+    node->next=l->head;
+    l->head=node;
   }
 
   l->elements++;

@@ -14,6 +14,8 @@
 #define DOWN 7
 #define DELETE 8
 
+#define EVENT_LOOP_SLEEP 100
+
 typedef struct graphics_t GUI;
 struct graphics_t{
   Display* dsp;
@@ -42,17 +44,18 @@ void set_main_icon(GUI* g,char* filename);//Optional
 void create_main_window(GUI* g,char* title);
 void set_main_size(GUI* g,int height, int width);
 
+void add_to_main(GUI* g,WIDGET* w);
+
 void show_main(GUI* g);
 
 int gui_running(GUI* g);
-
-void add_to_main(GUI* g,WIDGET* w);
 
 void update_widget(GUI* g,WIDGET* w);
 
 void shutdown_gui(GUI* g);
 void destroy_gui(GUI* g);
 
+// Helper Functions
 int to_gray(int color);
-
+void refresh_main_window(GUI* g);
 #endif

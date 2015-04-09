@@ -12,6 +12,7 @@
 #include "link.h"
 #include "queue.h"
 
+
 void destroy_gui(GUI* g);
 WIDGET* get_at_coords(GUI* g,int x, int y);
 char process_keystroke(GUI* g, XKeyEvent* e);
@@ -49,9 +50,7 @@ int to_gray(int color)
   return re;
 }
 
-void fake_free(void* data)
-{
-}
+void fake_free(void* data){}
 
 void* event_loop(void* data)
 {
@@ -370,7 +369,7 @@ void add_to_main(GUI* g,WIDGET* w)
     printf("Widget is NULL, Can't add\n");
     exit(-1);
   }
-  list_add(g->widgets,w);
+  list_add_tail(g->widgets,w);
 }
 
 
@@ -488,5 +487,19 @@ void update_widget(GUI* g,WIDGET* w)
   }
   pthread_mutex_lock(&g->lock);
   enqueue(g->updates,w);
+  pthread_mutex_unlock(&g->lock);
+}
+
+void refresh_main_window(GUI* g)
+{
+  if(g==NULL){
+    printf("GUI object is NULL!\n");
+    exit(-1);
+  }
+  pthread_mutex_lock(&g->lock);
+  XClearWindow(g->dsp,g->mainWindow);
+  int i;
+  for(i=0;i<list_length(g->widgets);i++)
+    enqueue(g->updates,list_get_pos(g->widgets,i));
   pthread_mutex_unlock(&g->lock);
 }

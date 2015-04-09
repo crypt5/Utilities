@@ -12,8 +12,9 @@ void click(GUI* g, WIDGET* self, void* data)
   else
     set_textfield_enable(text,1);
 
-  update_widget(g,text);
+  refresh_main_window(g);
 }
+
 
 int main()
 {

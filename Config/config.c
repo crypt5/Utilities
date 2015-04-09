@@ -215,7 +215,7 @@ void config_load_file(CONFIG* c,char* filename)
       switch(buf[0]){
       case 'I':
 	if(buf[1]==':'){
-	  list_add(c->list,process_int(buf));
+	  list_add_tail(c->list,process_int(buf));
 	}
 	else{
 	  printf("Config Value - '%s'\nis an invalid value, Ignoring\n",buf);
@@ -223,7 +223,7 @@ void config_load_file(CONFIG* c,char* filename)
 	break;
       case 'D':
 	if(buf[1]==':'){
-	  list_add(c->list,process_double(buf));
+	  list_add_tail(c->list,process_double(buf));
 	}
 	else{
 	  printf("Config Value - '%s'\nis an invalid value, Ignoring\n",buf);
@@ -231,7 +231,7 @@ void config_load_file(CONFIG* c,char* filename)
 	break;
       case 'S':
 	if(buf[1]==':'){
-	   list_add(c->list,process_string(buf));
+	   list_add_tail(c->list,process_string(buf));
 	}
 	else{
 	  printf("Config Value - '%s'\nis an invalid value, Ignoring\n",buf);
@@ -239,7 +239,7 @@ void config_load_file(CONFIG* c,char* filename)
 	break;
       case 'B':
 	if(buf[1]==':'){
-	  list_add(c->list,process_boolean(buf));
+	  list_add_tail(c->list,process_boolean(buf));
 	}
 	else{
 	  printf("Config Value - '%s'\nis an invalid value, Ignoring\n",buf);
