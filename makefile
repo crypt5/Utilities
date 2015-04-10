@@ -13,16 +13,16 @@ GRAPHICS_OBJ=$(addprefix Graphics/objects/,$(notdir $(GRAPHICS_SRC:.c=.o)))
 IO_SRC=$(wildcard BBBio/*.c)
 IO_OBJ=$(IO_SRC:.c=.o)
 
-LIBS=-lpthread -lgraphics -llogger -lconfig -lXpm
-RPATH=-Wl,-rpath,Output,-rpath,Output/Graphics
-XFLAGS=`pkg-config --cflags --libs x11`
-LINKCOM=-IOutput -LOutput -IOutput/Graphics -LOutput/Graphics
+LIBS=-lgraphics -llogger -lconfig -lBBBio
+RPATH=-Wl,-rpath,Output,-rpath,Output/Graphics,-rpath,Output/BBBio
+XFLAGS=`pkg-config --libs x11`
+LINKCOM=-IOutput -IOutput/Graphics -IOutput/BBBio -LOutput -LOutput/Graphics -LOutput/BBBio
 
 build-all: config logger graphics BBBio test
 
 #Build Test code
 test: test.c
-	$(CC) $(CFLAGS) $(LINKCOM) $(RPATH) $(XFLAGS) test.c -o main $(LIBS)
+	$(CC) $(CFLAGS) $(LINKCOM) $(RPATH) test.c -o main $(LIBS)
 
 #Data Structure(s) Build
 link: $(STRUCT)link.c $(STRUCT)link.h
@@ -45,20 +45,20 @@ $(IO_OBJ): $(IO_SRC)
 #Config Builder
 config: link Config/config.c Config/config.h
 	$(CC) $(CFLAGS) $(OFLAGS) Config/config.c -o Config/config.o
-	$(CC) --whole-archive -shared -o Output/libconfig.so Config/config.o $(STRUCT)link.o
+	$(CC)  -shared -o Output/libconfig.so Config/config.o $(STRUCT)link.o 
 	cp Config/config.h Output/config.h
 
 #Logger Builder 
 logger: queue Logger/logger.c Logger/logger.h  
 	$(CC) $(CFLAGS) $(OFLAGS) Logger/logger.c -o Logger/logger.o
-	$(CC) --whole-archive -shared -o Output/liblogger.so Logger/logger.o $(STRUCT)queue.o
+	$(CC) -shared -o Output/liblogger.so Logger/logger.o $(STRUCT)queue.o -lpthread
 	cp Logger/logger.h Output/logger.h
 
 #Graphics Build
 graphics: link $(GRAPHICS_OBJ) $(GRAPHC)graphics.c
 	mkdir -p Output/Graphics
 	$(CC) $(CFLAGS) $(OFLAGS) $(GRAPHICS_INC) $(GRAPHC)graphics.c -o $(GRAPHO)graphics.o
-	$(CC) --whole-archive -shared -o Output/Graphics/libgraphics.so $(GRAPHICS_OBJ) $(STRUCT)link.o $(GRAPHO)graphics.o
+	$(CC) -shared -o Output/Graphics/libgraphics.so $(GRAPHICS_OBJ) $(STRUCT)link.o $(GRAPHO)graphics.o -lpthread -lXpm $(XFALGS)
 	cp Graphics/headers/*.h Output/Graphics/
 
 $(GRAPHICS_OBJ): $(GRAPHICS_SRC)

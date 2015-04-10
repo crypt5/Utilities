@@ -2,6 +2,9 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include "graphics.h"
+#include "logger.h"
+#include "config.h"
+#include "BBBiolib.h"
 
 void click(GUI* g, WIDGET* self, void* data)
 {
@@ -19,9 +22,16 @@ void click(GUI* g, WIDGET* self, void* data)
 int main()
 {
   GUI* g=NULL;
+  LOGGER* log=NULL;
   WIDGET* text=NULL;
   WIDGET* but=NULL;
   WIDGET* sep=NULL;
+
+  log=logger_init("test.log");
+  int i;
+  for(i=0;i<100;i++)
+    logger_log(log,"Test Message");
+  logger_shutdown(log);
 
   g=init_gui();
   create_main_window(g,"Textbox Testing");
