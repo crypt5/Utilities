@@ -45,20 +45,20 @@ $(IO_OBJ): $(IO_SRC)
 #Config Builder
 config: link Config/config.c Config/config.h
 	$(CC) $(CFLAGS) $(OFLAGS) Config/config.c -o Config/config.o
-	$(CC) -shared -o Output/libconfig.so Config/config.o $(STRUCT)link.o
+	$(CC) --whole-archive -shared -o Output/libconfig.so Config/config.o $(STRUCT)link.o
 	cp Config/config.h Output/config.h
 
 #Logger Builder 
 logger: queue Logger/logger.c Logger/logger.h  
 	$(CC) $(CFLAGS) $(OFLAGS) Logger/logger.c -o Logger/logger.o
-	$(CC) -shared -o Output/liblogger.so Logger/logger.o $(STRUCT)queue.o
+	$(CC) --whole-archive -shared -o Output/liblogger.so Logger/logger.o $(STRUCT)queue.o
 	cp Logger/logger.h Output/logger.h
 
 #Graphics Build
 graphics: link $(GRAPHICS_OBJ) $(GRAPHC)graphics.c
 	mkdir -p Output/Graphics
 	$(CC) $(CFLAGS) $(OFLAGS) $(GRAPHICS_INC) $(GRAPHC)graphics.c -o $(GRAPHO)graphics.o
-	$(CC) -shared -o Output/Graphics/libgraphics.so $(GRAPHICS_OBJ) $(STRUCT)link.o $(GRAPHO)graphics.o
+	$(CC) --whole-archive -shared -o Output/Graphics/libgraphics.so $(GRAPHICS_OBJ) $(STRUCT)link.o $(GRAPHO)graphics.o
 	cp Graphics/headers/*.h Output/Graphics/
 
 $(GRAPHICS_OBJ): $(GRAPHICS_SRC)
