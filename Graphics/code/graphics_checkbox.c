@@ -58,10 +58,12 @@ void paint_checkbox(GUI* g, WIDGET* w)
     if(data->text_color>0){
       XSetForeground(g->dsp,g->text, to_gray(data->text_color));
       XDrawString(g->dsp,data->map,g->text,18,w->height*2+w->height-(g->font->ascent/2),(char*)w->string,strlen((char*)w->string));
+      XSetForeground(g->dsp,g->text,g->blackColor);
     }
     else {
       XSetForeground(g->dsp,g->text,to_gray(g->blackColor));
       XDrawString(g->dsp,data->map,g->text,18,w->height*2+w->height-(g->font->ascent/2),(char*)w->string,strlen((char*)w->string));
+      XSetForeground(g->dsp,g->text,g->blackColor);
     }
 
     // Debug print to file

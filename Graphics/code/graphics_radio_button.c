@@ -21,13 +21,13 @@ void paint_radio(GUI* g, WIDGET* w)
   if((w->status&STATUS_REPAINT)>0){
     if(w->width==0){
       w->height=g->font->ascent*2;
-      w->width=XTextWidth(g->font,w->string,strlen(w->string))+20;
+      w->width=XTextWidth(g->font,w->string,strlen(w->string))+25;
       data->map=XCreatePixmap(g->dsp,g->mainWindow,w->width,3*w->height,24);
     }
     else{
       XCopyArea(g->dsp,data->map,g->mainWindow,g->draw,0,0,w->width,w->height,w->x,w->y);
       XFreePixmap(g->dsp,data->map);
-      w->width=XTextWidth(g->font,w->string,strlen(w->string))+20;
+      w->width=XTextWidth(g->font,w->string,strlen(w->string))+25;
       w->height=g->font->ascent*2;
       data->map=XCreatePixmap(g->dsp,g->mainWindow,w->width,w->height*3,24);
     }

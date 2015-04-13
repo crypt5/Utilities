@@ -18,16 +18,19 @@ struct textfield_data_t{
 void paint_textfield(GUI* g,WIDGET* w)
 {
   int width;
+  int taken=0;
   struct textfield_data_t* data=w->widget_data;
 
   if((w->status&STATUS_REPAINT)>0){
 
     if(w->width==0){
-      for(width=0;width<data->max_length;width++)
+      while(w->string[taken]!='\0')
+	taken++;
+      for(width=taken;width<data->max_length;width++)
 	w->string[width]='A';
       w->width=XTextWidth(g->font,w->string,strlen(w->string))+6;
       w->height=g->font->ascent*2;
-      for(width=0;width<data->max_length;width++)
+      for(width=taken;width<data->max_length;width++)
 	w->string[width]='\0';
       data->map=XCreatePixmap(g->dsp,g->mainWindow,w->width,3*w->height,24);
     }

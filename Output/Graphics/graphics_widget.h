@@ -2,7 +2,7 @@
 #define GRAPHICS_WIDGET_H_
 
 /* Uncomment to print out the debug images
- * Create a folder in the main profram dir
+ * Create a folder in the main program dir
  * called pic_output to hold the pictures
  */
 #define DEBUG_PRINT_IMAGES
