@@ -251,7 +251,6 @@ void destroy_textfield(GUI* g,WIDGET* w)
 
 void set_textfield_text(WIDGET* w,char* text)
 {
-  char* s=NULL;
   struct textfield_data_t* data=NULL;
   if(w==NULL){
     printf("Widget is NULL!\n");
@@ -263,14 +262,7 @@ void set_textfield_text(WIDGET* w,char* text)
   }
   data=w->widget_data;
   if(strlen(text)<data->max_length){
-    s=malloc(strlen(text)+1);
-    if(s==NULL){
-      printf("String Malloc Failed!\n");
-      exit(-2);
-    }
-    strcpy(s,text);
-    free(w->string);
-    w->string=s;
+    strcpy(w->string,text);
     data->current_pos=0;
   }
   else{

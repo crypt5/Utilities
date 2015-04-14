@@ -5,7 +5,7 @@
  * Create a folder in the main program dir
  * called pic_output to hold the pictures
  */
-#define DEBUG_PRINT_IMAGES
+//#define DEBUG_PRINT_IMAGES
 
 //Widget Types (decimal)
 #define LABEL 1

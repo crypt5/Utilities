@@ -146,10 +146,10 @@ int main()
   build_text(g);
   build_misc(g);
 
+  
   pic=create_picture(g,"pic.xpm",10,300);
-
   add_to_main(g,pic);
-
+  
   show_main(g);
   while(gui_running(g)){
     usleep(250000);
