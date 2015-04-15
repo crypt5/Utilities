@@ -534,24 +534,25 @@ WINDOW* create_sub_window(GUI* g,char* title)
   win->updates=init_queue(fake_free);
 
   win->font=g->font;
-  w = XCreateSimpleWindow(g->dsp,g->mainWindow,0,0,100,100,0,0,win->bgColor);
-  XSelectInput(g->dsp, w, StructureNotifyMask|KeyReleaseMask|ButtonPressMask|ButtonReleaseMask|ExposureMask);
+
+  w = XCreateSimpleWindow(win->dsp,DefaultRootWindow(win->dsp),0,0,100,100,0,0,win->bgColor);
+  XSelectInput(win->dsp, w, StructureNotifyMask|KeyReleaseMask|ButtonPressMask|ButtonReleaseMask|ExposureMask);
   win->mainWindow=w;
   if(title!=NULL)
-    XStoreName(g->dsp,w,title);
+    XStoreName(win->dsp,w,title);
   else
-    XStoreName(g->dsp,w,"No Title");
+    XStoreName(win->dsp,w,"No Title");
 
-  win->text=XCreateGC(g->dsp,win->mainWindow,0,NULL);
-  win->draw=XCreateGC(g->dsp,win->mainWindow,0,NULL);
-  XSetGraphicsExposures(g->dsp, win->draw, 0);
-  XSetGraphicsExposures(g->dsp, win->text,0);
-  XSetFont(g->dsp,win->text,win->font->fid);
-  XSetForeground(g->dsp, win->text, win->blackColor);
+  win->text=XCreateGC(win->dsp,win->mainWindow,0,NULL);
+  win->draw=XCreateGC(win->dsp,win->mainWindow,0,NULL);
+  XSetGraphicsExposures(win->dsp, win->draw, 0);
+  XSetGraphicsExposures(win->dsp, win->text,0);
+  XSetFont(win->dsp,win->text,win->font->fid);
+  XSetForeground(win->dsp, win->text, win->blackColor);
   return win;
 }
 
-void destroy_window(GUI* g,WINDOW* win)
+void destroy_window(WINDOW* win)
 {
   WIDGET* w=NULL;
   int re;
@@ -574,8 +575,39 @@ void destroy_window(GUI* g,WINDOW* win)
   }
   list_destroy(win->widgets);
   destroy_queue(win->updates);
-  XFreeGC(g->dsp,win->text);
-  XFreeGC(g->dsp,win->draw);
+  XFreeGC(win->dsp,win->text);
+  XFreeGC(win->dsp,win->draw);
   free(win);
   win=NULL;
+}
+
+void set_sub_window_size(WINDOW* win,int height, int width)
+{
+  if(win==NULL){
+    printf("WINDOW Object NULL, No window\n");
+    exit(-1);
+  }
+  XResizeWindow(win->dsp,win->mainWindow,width,height);
+}
+
+void set_sub_window_visible(WINDOW* win,int visible)
+{
+  int re;
+  XEvent e;
+  if(win==NULL){
+    printf("WINDOW Object is NULL, no window to show\n");
+    exit(-1);
+  }
+
+  XMapWindow(win->dsp, win->mainWindow);
+  while(XNextEvent(win->dsp,&e)){
+    if(e.type==MapNotify)
+      break;
+  }
+  re=pthread_create(&win->tid,NULL,event_loop,win);
+  if(re!=0){
+    printf("Thread Create for Event loop Failed\n");
+    exit(-1);
+  }
+  XSetWMProtocols(win->dsp, win->mainWindow, &win->wm_delete_window, 1);
 }

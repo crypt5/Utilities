@@ -61,11 +61,11 @@ void destroy_gui(GUI* g);
 */
 WINDOW* create_sub_window(GUI* g,char* title);
 void set_window_icon(WINDOW* win,char* filename);//TODO
-void set_sub_window_size(WINDOW* win,int hieght, int width);//TODO
+void set_sub_window_size(WINDOW* win,int height, int width);
 void add_to_sub_window(WINDOW* win,WIDGET* w);//TODO
-void set_sub_window_visible(WINDOW* win,int visible);//TODO
+void set_sub_window_visible(WINDOW* win,int visible);
 int window_running(WINDOW* win);//TODO
-void destroy_window(GUI* g,WINDOW* win);
+void destroy_window(WINDOW* win);
 
 // Helper Functions
 int to_gray(int color);

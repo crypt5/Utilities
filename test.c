@@ -12,17 +12,19 @@ int main()
   create_main_window(g,"Main Window");
   set_main_size(g,500,500);
 
-  w=create_sub_window(g,"Sub Window");
-  destroy_window(g,w);
-  
   lab=create_label("Main Window",100,100);
   add_to_main(g,lab);
 
   show_main(g);
+
+  w=create_sub_window(g,"Sub Window");
+  set_sub_window_size(w,500,500);
+  set_sub_window_visible(w,4);
+
   while(gui_running(g)){
     usleep(250000);
   }
-
+  destroy_window(w);
   destroy_gui(g);
   return 0;
 }
