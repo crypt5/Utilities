@@ -15,6 +15,7 @@
 #define DELETE 8
 
 typedef struct graphics_t GUI;
+typedef struct graphics_t WINDOW;
 struct graphics_t{
   Display* dsp;
   Window mainWindow;
@@ -35,7 +36,10 @@ struct graphics_t{
 
 #include "graphics_widget.h"
 
-//These functions need to be called in this order
+/*
+  These functions need to be called in this order 
+  for the main window
+*/
 GUI* init_gui();
 void set_main_background(GUI* g,int RGB); // Optional 
 void set_main_icon(GUI* g,char* filename);//Optional
@@ -48,12 +52,23 @@ void show_main(GUI* g);
 
 int gui_running(GUI* g);
 
-void update_widget(GUI* g,WIDGET* w);
-
 void shutdown_gui(GUI* g);
 void destroy_gui(GUI* g);
+
+/*
+  These functions deal with sub windows and
+  can only be called after create_main_window
+*/
+WINDOW* create_sub_window(GUI* g,char* title);
+void set_window_icon(WINDOW* win,char* filename);//TODO
+void set_sub_window_size(WINDOW* win,int hieght, int width);//TODO
+void add_to_sub_window(WINDOW* win,WIDGET* w);//TODO
+void set_sub_window_visible(WINDOW* win,int visible);//TODO
+int window_running(WINDOW* win);//TODO
+void destroy_window(GUI* g,WINDOW* win);
 
 // Helper Functions
 int to_gray(int color);
 void refresh_main_window(GUI* g);
+void update_widget(GUI* g,WIDGET* w);
 #endif

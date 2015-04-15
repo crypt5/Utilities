@@ -338,7 +338,6 @@ void set_main_icon(GUI* g,char* filename)
       hint->icon_y=0;
       XSetWMHints(g->dsp,g->mainWindow,hint);
       XFree(hint);
-      //XFreePixmap(g->dsp,p);
     }
     else{
       printf("Read access to picture denied or it doens't exist!\n");
@@ -502,4 +501,81 @@ void refresh_main_window(GUI* g)
   for(i=0;i<list_length(g->widgets);i++)
     enqueue(g->updates,list_get_pos(g->widgets,i));
   pthread_mutex_unlock(&g->lock);
+}
+
+WINDOW* create_sub_window(GUI* g,char* title)
+{
+  WINDOW* win=NULL;
+  Window w;
+  int mutex_return;
+  if(g==NULL){
+    printf("GUI is NULL, Cant create a new window\n");
+    exit(-1);
+  }
+  win=malloc(sizeof(WINDOW));
+  if(win==NULL){
+    printf("GUI subwindow struct malloc failed!\n");
+    exit(-1);
+  }
+  win->dsp=g->dsp;
+  win->blackColor=g->blackColor;
+  win->whiteColor=g->whiteColor;
+  win->bgColor=g->bgColor;
+  win->run=1;
+  mutex_return=pthread_mutex_init(&win->lock,NULL);
+  if(mutex_return!=0){
+    printf("GUI Mutex Creation Failed\n");
+    exit(-1);
+  }
+  win->wm_protocols=g->wm_protocols;
+  win->wm_delete_window=g->wm_delete_window;
+
+  win->widgets=list_init(fake_free,NULL);
+  win->updates=init_queue(fake_free);
+
+  win->font=g->font;
+  w = XCreateSimpleWindow(g->dsp,g->mainWindow,0,0,100,100,0,0,win->bgColor);
+  XSelectInput(g->dsp, w, StructureNotifyMask|KeyReleaseMask|ButtonPressMask|ButtonReleaseMask|ExposureMask);
+  win->mainWindow=w;
+  if(title!=NULL)
+    XStoreName(g->dsp,w,title);
+  else
+    XStoreName(g->dsp,w,"No Title");
+
+  win->text=XCreateGC(g->dsp,win->mainWindow,0,NULL);
+  win->draw=XCreateGC(g->dsp,win->mainWindow,0,NULL);
+  XSetGraphicsExposures(g->dsp, win->draw, 0);
+  XSetGraphicsExposures(g->dsp, win->text,0);
+  XSetFont(g->dsp,win->text,win->font->fid);
+  XSetForeground(g->dsp, win->text, win->blackColor);
+  return win;
+}
+
+void destroy_window(GUI* g,WINDOW* win)
+{
+  WIDGET* w=NULL;
+  int re;
+  if(win==NULL){
+    printf("GUI Never Opened\n");
+    exit(-1);
+  }
+  pthread_mutex_lock(&win->lock);
+  win->run=0;
+  pthread_mutex_unlock(&win->lock);
+
+  pthread_join(win->tid,NULL);
+
+  re=pthread_mutex_destroy(&win->lock);
+  if(re!=0)
+    printf("Mutex Destroy Failed\n");
+  for(re=0;re<list_length(win->widgets);re++){
+    w=list_get_pos(win->widgets,re);
+    w->ufree(win,w);
+  }
+  list_destroy(win->widgets);
+  destroy_queue(win->updates);
+  XFreeGC(g->dsp,win->text);
+  XFreeGC(g->dsp,win->draw);
+  free(win);
+  win=NULL;
 }
