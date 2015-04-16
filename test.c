@@ -6,7 +6,7 @@ int main()
 {
   GUI* g=NULL;
   WIDGET* lab=NULL;
-  WINDOW* w=NULL;
+  WINDOW* win=NULL;
 
   g=init_gui();
   create_main_window(g,"Main Window");
@@ -15,16 +15,13 @@ int main()
   lab=create_label("Main Window",100,100);
   add_to_main(g,lab);
 
+  win=create_window(g,"test",-1);
+  destroy_window(g,win);
+
   show_main(g);
-
-  w=create_sub_window(g,"Sub Window");
-  set_sub_window_size(w,500,500);
-  set_sub_window_visible(w,4);
-
   while(gui_running(g)){
     usleep(250000);
   }
-  destroy_window(w);
   destroy_gui(g);
   return 0;
 }

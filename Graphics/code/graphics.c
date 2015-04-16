@@ -211,7 +211,7 @@ GUI* init_gui()
   g->updates=init_queue(fake_free);
 
   g->font=XLoadQueryFont(g->dsp,"*9x15*");
-
+  g->windows=NULL;
   return g;
 }
 
@@ -501,113 +501,4 @@ void refresh_main_window(GUI* g)
   for(i=0;i<list_length(g->widgets);i++)
     enqueue(g->updates,list_get_pos(g->widgets,i));
   pthread_mutex_unlock(&g->lock);
-}
-
-WINDOW* create_sub_window(GUI* g,char* title)
-{
-  WINDOW* win=NULL;
-  Window w;
-  int mutex_return;
-  if(g==NULL){
-    printf("GUI is NULL, Cant create a new window\n");
-    exit(-1);
-  }
-  win=malloc(sizeof(WINDOW));
-  if(win==NULL){
-    printf("GUI subwindow struct malloc failed!\n");
-    exit(-1);
-  }
-  win->dsp=g->dsp;
-  win->blackColor=g->blackColor;
-  win->whiteColor=g->whiteColor;
-  win->bgColor=g->bgColor;
-  win->run=1;
-  mutex_return=pthread_mutex_init(&win->lock,NULL);
-  if(mutex_return!=0){
-    printf("GUI Mutex Creation Failed\n");
-    exit(-1);
-  }
-  win->wm_protocols=g->wm_protocols;
-  win->wm_delete_window=g->wm_delete_window;
-
-  win->widgets=list_init(fake_free,NULL);
-  win->updates=init_queue(fake_free);
-
-  win->font=g->font;
-
-  w = XCreateSimpleWindow(win->dsp,DefaultRootWindow(win->dsp),0,0,100,100,0,0,win->bgColor);
-  XSelectInput(win->dsp, w, StructureNotifyMask|KeyReleaseMask|ButtonPressMask|ButtonReleaseMask|ExposureMask);
-  win->mainWindow=w;
-  if(title!=NULL)
-    XStoreName(win->dsp,w,title);
-  else
-    XStoreName(win->dsp,w,"No Title");
-
-  win->text=XCreateGC(win->dsp,win->mainWindow,0,NULL);
-  win->draw=XCreateGC(win->dsp,win->mainWindow,0,NULL);
-  XSetGraphicsExposures(win->dsp, win->draw, 0);
-  XSetGraphicsExposures(win->dsp, win->text,0);
-  XSetFont(win->dsp,win->text,win->font->fid);
-  XSetForeground(win->dsp, win->text, win->blackColor);
-  return win;
-}
-
-void destroy_window(WINDOW* win)
-{
-  WIDGET* w=NULL;
-  int re;
-  if(win==NULL){
-    printf("GUI Never Opened\n");
-    exit(-1);
-  }
-  pthread_mutex_lock(&win->lock);
-  win->run=0;
-  pthread_mutex_unlock(&win->lock);
-
-  pthread_join(win->tid,NULL);
-
-  re=pthread_mutex_destroy(&win->lock);
-  if(re!=0)
-    printf("Mutex Destroy Failed\n");
-  for(re=0;re<list_length(win->widgets);re++){
-    w=list_get_pos(win->widgets,re);
-    w->ufree(win,w);
-  }
-  list_destroy(win->widgets);
-  destroy_queue(win->updates);
-  XFreeGC(win->dsp,win->text);
-  XFreeGC(win->dsp,win->draw);
-  free(win);
-  win=NULL;
-}
-
-void set_sub_window_size(WINDOW* win,int height, int width)
-{
-  if(win==NULL){
-    printf("WINDOW Object NULL, No window\n");
-    exit(-1);
-  }
-  XResizeWindow(win->dsp,win->mainWindow,width,height);
-}
-
-void set_sub_window_visible(WINDOW* win,int visible)
-{
-  int re;
-  XEvent e;
-  if(win==NULL){
-    printf("WINDOW Object is NULL, no window to show\n");
-    exit(-1);
-  }
-
-  XMapWindow(win->dsp, win->mainWindow);
-  while(XNextEvent(win->dsp,&e)){
-    if(e.type==MapNotify)
-      break;
-  }
-  re=pthread_create(&win->tid,NULL,event_loop,win);
-  if(re!=0){
-    printf("Thread Create for Event loop Failed\n");
-    exit(-1);
-  }
-  XSetWMProtocols(win->dsp, win->mainWindow, &win->wm_delete_window, 1);
 }
