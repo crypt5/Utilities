@@ -44,7 +44,7 @@ WINDOW* create_window(GUI* g,char* title, int bgColor)
   w->w=win;
   w->widgets=list_init(fake_free2,NULL);
   w->updates=init_queue(fake_free2);
-
+  XSetWMProtocols(g->dsp, w->w, &g->wm_delete_window, 1);
   return w;
 }
 
@@ -69,4 +69,35 @@ void destroy_window(GUI* g,WINDOW* win)
   destroy_queue(win->updates);
   free(win);
   win=NULL;
+}
+
+void set_window_visible(GUI* g,WINDOW* win,int visible)
+{
+  if(g==NULL){
+    printf("GUI doesn't exist! Can't show window\n");
+    exit(-1);
+  }
+  if(win==NULL){
+    printf("Window doesn't exist!\n");
+    exit(-1);
+  }
+  if(visible==1)
+    XMapWindow(g->dsp,win->w);
+  else if(visible==0)
+    XUnmapWindow(g->dsp,win->w);
+  else
+    printf("Invalid visible identifier: %d\nNo action taken\n",visible);
+}
+
+void set_window_size(GUI* g,WINDOW* win, int height, int width)
+{
+  if(g==NULL){
+    printf("GUI doesn't exist! Can't show window\n");
+    exit(-1);
+  }
+  if(win==NULL){
+    printf("Window doesn't exist!\n");
+    exit(-1);
+  }
+  XResizeWindow(g->dsp,win->w,width,height);
 }

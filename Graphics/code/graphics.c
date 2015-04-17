@@ -55,6 +55,7 @@ void fake_free(void* data){}
 void* event_loop(void* data)
 {
   GUI* g=NULL;
+  Window win;
   XEvent e;
   int keep_running,i;
   WIDGET* active=NULL;
@@ -72,14 +73,20 @@ void* event_loop(void* data)
 
     if(XPending(g->dsp)>0){
       XNextEvent(g->dsp,&e);
+      win=e.xclient.window;
       switch (e.type) {
       case ClientMessage:
         if (e.xclient.message_type == g->wm_protocols &&
-            e.xclient.data.l[0] == g->wm_delete_window)  {
-	  pthread_mutex_lock(&g->lock);
-	  g->run=0;
-	  pthread_mutex_unlock(&g->lock);
-        }
+            e.xclient.data.l[0] == g->wm_delete_window){
+	  if(win==g->mainWindow)  {
+	    pthread_mutex_lock(&g->lock);
+	    g->run=0;
+	    pthread_mutex_unlock(&g->lock);
+	  }
+	  else{ //Not the main window so un map it
+	    XUnmapWindow(g->dsp, win);
+	  }
+	}
 	break;
       case ButtonPress:
 	if(e.xbutton.button==1){//Left mouse Button
@@ -153,6 +160,7 @@ void* event_loop(void* data)
 	break;
       case UnmapNotify:
       case ConfigureNotify:
+      case ReparentNotify:
 	// Ignore these events
 	break;
       default:
@@ -209,9 +217,9 @@ GUI* init_gui()
 
   g->widgets=list_init(fake_free,NULL);
   g->updates=init_queue(fake_free);
+  g->windows=list_init(fake_free,NULL);
 
   g->font=XLoadQueryFont(g->dsp,"*9x15*");
-  g->windows=NULL;
   return g;
 }
 
@@ -262,6 +270,10 @@ void destroy_gui(GUI* g)
     w=list_get_pos(g->widgets,re);
     w->ufree(g,w);
   }
+  for(re=0;re<list_length(g->windows);re++)
+    destroy_window(g,list_get_pos(g->windows,re));
+
+  list_destroy(g->windows);
   list_destroy(g->widgets);
   destroy_queue(g->updates);
   XFreeFont(g->dsp,g->font);
@@ -501,4 +513,18 @@ void refresh_main_window(GUI* g)
   for(i=0;i<list_length(g->widgets);i++)
     enqueue(g->updates,list_get_pos(g->widgets,i));
   pthread_mutex_unlock(&g->lock);
+}
+
+void register_window(GUI* g, WINDOW* w)
+{
+  if(g==NULL){
+    printf("GUI is NULL cant add!\n");
+    exit(-1);
+  }
+  if(w==NULL){
+    printf("Window is NULL, can't add\n");
+    exit(-1);
+  }
+  list_add_tail(g->windows,w);
+  XMapWindow(g->dsp,w->w);
 }

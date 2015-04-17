@@ -23,7 +23,7 @@ void set_window_size(GUI* g,WINDOW* win, int height, int width);//TODO
 
 void add_widget_to_window(WINDOW* win, WIDGET* w);//TODO
 
-void set_window_visible(GUI* g,WINDOW* win,int visible);//TODO
+void set_window_visible(GUI* g,WINDOW* win,int visible);
 
 void destroy_window(GUI* g,WINDOW* win);
 #endif

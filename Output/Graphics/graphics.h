@@ -61,4 +61,7 @@ void destroy_gui(GUI* g);
 int to_gray(int color);
 void refresh_main_window(GUI* g);
 void update_widget(GUI* g,WIDGET* w);
+
+//Window Fuinctions
+void register_window(GUI* g, WINDOW* w);
 #endif

@@ -16,11 +16,18 @@ int main()
   add_to_main(g,lab);
 
   win=create_window(g,"test",-1);
-  destroy_window(g,win);
+  set_window_size(g,win,300,300);
+  register_window(g,win);
 
   show_main(g);
+  int i=0;
   while(gui_running(g)){
-    usleep(250000);
+    set_window_visible(g,win,i);
+    usleep(1000000);
+    if(i==0)
+      i++;
+    else
+      i--;
   }
   destroy_gui(g);
   return 0;
