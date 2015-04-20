@@ -37,6 +37,10 @@ void paint_button(GUI* g,Window win, WIDGET* w)
     // Paint not clicked
     XSetForeground(g->dsp,g->draw, 0x00AAAAAA);
     XFillRectangle(g->dsp,data->map,g->draw,0,w->height,w->width,w->height);
+    XSetForeground(g->dsp,g->draw,g->blackColor);
+    XDrawRectangle(g->dsp,data->map,g->draw,0,w->height,w->width-1,w->height-1);
+    XDrawLine(g->dsp,data->map,g->draw,1,w->height*2-2,w->width-2,w->height*2-2);
+    XDrawLine(g->dsp,data->map,g->draw,w->width-2,w->height+1,w->width-2,w->height*2-2);
     if(data->text_color>0){
       XSetForeground(g->dsp,g->text,data->text_color);
       XDrawString(g->dsp,data->map,g->text,10,w->height+(w->height/2+w->height/4),w->string,strlen(w->string));
@@ -50,6 +54,10 @@ void paint_button(GUI* g,Window win, WIDGET* w)
     // Paint not enabled
     XSetForeground(g->dsp,g->draw,0x00CCCCCC);
     XFillRectangle(g->dsp,data->map,g->draw,0,w->height*3,w->width,w->height);
+    XSetForeground(g->dsp,g->draw,to_gray(g->blackColor));
+    XDrawRectangle(g->dsp,data->map,g->draw,0,w->height*3,w->width-1,w->height-1);
+    XDrawLine(g->dsp,data->map,g->draw,1,w->height*4-2,w->width-2,w->height*4-2);
+    XDrawLine(g->dsp,data->map,g->draw,w->width-2,w->height*3+1,w->width-2,w->height*4-2);
     if(data->text_color>0){
       XSetForeground(g->dsp,g->text,to_gray(data->text_color));
       XDrawString(g->dsp,data->map,g->text,10,w->height*3+(w->height/2+w->height/4),w->string,strlen(w->string));
@@ -64,8 +72,15 @@ void paint_button(GUI* g,Window win, WIDGET* w)
     // Paint clicked
     XSetForeground(g->dsp,g->draw,0x00808080);
     XFillRectangle(g->dsp,data->map,g->draw,0,w->height*2,w->width,w->height);
+    XSetForeground(g->dsp,g->draw,g->blackColor);
+    XDrawRectangle(g->dsp,data->map,g->draw,0,w->height*2,w->width-1,w->height-1);
+    
+    XDrawLine(g->dsp,data->map,g->draw,1,w->height*2+1,w->width-2,w->height*2+1);
+    XDrawLine(g->dsp,data->map,g->draw,1,w->height*2+1,1,w->height*3-2);
+    
+
     if(data->text_color<0){
-      XDrawString(g->dsp,data->map,g->text,10,w->height*2+(w->height/2+w->height/4),w->string,strlen(w->string));
+      XDrawString(g->dsp,data->map,g->text,11,w->height*2+(w->height/2+w->height/4)+1,w->string,strlen(w->string));
     }
     else {
       XSetForeground(g->dsp,g->text,data->text_color);
@@ -157,7 +172,7 @@ void destroy_button(GUI* g,WIDGET* w)
     exit(-2);
   }
   struct button_data_t* data=w->widget_data;
-  XFreePixmap(g->dsp,data->map);
+  //XFreePixmap(g->dsp,data->map);
   free(w->widget_data);
   free(w->string);
   free(w);

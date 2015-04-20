@@ -60,11 +60,12 @@ void destroy_window(GUI* g,WINDOW* win)
     printf("Window doesn't exist!\n");
     exit(-1);
   }
-
+  
   for(i=0;i<list_length(win->widgets);i++){
     w=list_get_pos(win->widgets,i);
     w->ufree(g,w);
   }
+  
   list_destroy(win->widgets);
   destroy_queue(win->updates);
   free(win);
@@ -161,4 +162,32 @@ void update_window_widget(WINDOW* win, WIDGET* w)
     exit(-1);
   }
   enqueue(win->updates,w);
+}
+void ok_popup_callback(GUI* g, WIDGET* w,void* data){*(int*)data=1;}
+int ok_popup(GUI* g,char* message, char* title,int popup_type)
+{
+  WINDOW* win=NULL;
+  int clicked=0;
+  WIDGET* lab=NULL;
+  WIDGET* but=NULL;
+
+  win=create_window(g,title,-1);
+  set_window_size(g,win,150,500);
+  lab=create_label(message,75,30);
+  but=create_button("OK",230,120);
+  set_button_callback(but,ok_popup_callback,&clicked);
+
+  add_widget_to_window(win,lab);
+  add_widget_to_window(win,but);
+
+  register_window(g,win);
+  set_window_visible(g,win,1);
+  while(clicked==0)
+    usleep(5000);  
+  
+  set_window_visible(g,win,0);
+  
+  unregister_window(g,win);
+  destroy_window(g,win);
+  return clicked;
 }

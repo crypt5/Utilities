@@ -64,4 +64,5 @@ void update_widget(GUI* g,WIDGET* w);
 
 //Window Fuinctions
 void register_window(GUI* g, WINDOW* w);
+void unregister_window(GUI* g,WINDOW* w);
 #endif

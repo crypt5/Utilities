@@ -92,7 +92,7 @@ void destroy_picture(GUI* g,WIDGET* w)
     exit(-1);
   }
   data=w->widget_data;
-  XFreePixmap(g->dsp,data->img);
+  //XFreePixmap(g->dsp,data->img);
   free(data);
   free(w);
 }

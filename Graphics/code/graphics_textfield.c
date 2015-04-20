@@ -243,7 +243,7 @@ void destroy_textfield(GUI* g,WIDGET* w)
     exit(-2);
   }
   struct textfield_data_t* data=w->widget_data;
-  XFreePixmap(g->dsp,data->map);
+  //XFreePixmap(g->dsp,data->map);
   free(w->string);
   free(w->widget_data);
   free(w);

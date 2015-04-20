@@ -4,7 +4,7 @@
 
 void button_call(GUI* g, WIDGET* w, void* data)
 {
-  static int visible=0;
+  static int visible=1;
   set_window_visible(g,(WINDOW*)data,visible);
   if(visible==0)
     visible=1;
@@ -37,11 +37,14 @@ int main()
 
   add_widget_to_window(win,lab_sub);
 
+  set_button_callback(show,button_call,win);
   show_main(g);
 
-  set_button_callback(show,button_call,win);
+  int re=ok_popup(g,"This is a Warning","Warning",POPUP_TYPE_WARNING);
+  printf("Return: %d\n",re);
+
   while(gui_running(g)){
-    usleep(1000000);
+    usleep(5000);
   }
 
   destroy_gui(g);

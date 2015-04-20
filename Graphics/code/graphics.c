@@ -105,7 +105,8 @@ void* event_loop(void* data)
 	    clicked=get_at_coords(g->widgets,e.xbutton.x, e.xbutton.y);
 	  else{
 	    win_data=list_get(g->windows,&win); 
-	    clicked=get_at_coords(win_data->widgets,e.xbutton.x, e.xbutton.y);
+	    if(win_data!=NULL)
+	      clicked=get_at_coords(win_data->widgets,e.xbutton.x, e.xbutton.y);
 	  }
 	  if(clicked!=NULL){
 	    if(clicked!=selected&&selected!=NULL){
@@ -135,7 +136,8 @@ void* event_loop(void* data)
 	    clicked=get_at_coords(g->widgets,e.xbutton.x, e.xbutton.y);
 	  else{
 	    win_data=list_get(g->windows,&win); 
-	    clicked=get_at_coords(win_data->widgets,e.xbutton.x, e.xbutton.y);
+	    if(win_data!=NULL)
+	      clicked=get_at_coords(win_data->widgets,e.xbutton.x, e.xbutton.y);
 	  }
 	  if(clicked!=NULL){
 	    if(clicked==active){
@@ -182,9 +184,11 @@ void* event_loop(void* data)
 	}
 	else{
 	  win_data=list_get(g->windows,&win); 
-	  for(i=0;i<list_length(win_data->widgets);i++){
-	    temp=(WIDGET*)list_get_pos(win_data->widgets,i);
-	    temp->paint(g,win,temp);
+	  if(win_data!=NULL){
+	    for(i=0;i<list_length(win_data->widgets);i++){
+	      temp=(WIDGET*)list_get_pos(win_data->widgets,i);
+	      temp->paint(g,win,temp);
+	    }
 	  }
 	}
 	break;
@@ -205,7 +209,6 @@ void* event_loop(void* data)
 	temp->paint(g,win,temp);
       }
       else{
-	//TODO Paint sub window update
 	for(i=0;i<list_length(g->windows);i++){
 	  win_data=list_get_pos(g->windows,i); 
 	  if(is_queue_empty(win_data->updates)!=1){
@@ -220,7 +223,6 @@ void* event_loop(void* data)
     keep_running=g->run;
     pthread_mutex_unlock(&g->lock);
   }
-
   return NULL;
 }
 
@@ -302,7 +304,6 @@ void destroy_gui(GUI* g)
   pthread_mutex_unlock(&g->lock);
 
   pthread_join(g->tid,NULL);
-
   re=pthread_mutex_destroy(&g->lock);
   if(re!=0)
     printf("Mutex Destroy Failed\n");
@@ -312,7 +313,6 @@ void destroy_gui(GUI* g)
   }
   for(re=0;re<list_length(g->windows);re++)
     destroy_window(g,list_get_pos(g->windows,re));
-
   list_destroy(g->windows);
   list_destroy(g->widgets);
   destroy_queue(g->updates);
@@ -322,6 +322,7 @@ void destroy_gui(GUI* g)
   XCloseDisplay(g->dsp);
   free(g);
   g=NULL;
+
 }
 
 void shutdown_gui(GUI* g)
@@ -566,4 +567,16 @@ void register_window(GUI* g, WINDOW* w)
     exit(-1);
   }
   list_add_tail(g->windows,w);
+}
+void unregister_window(GUI* g, WINDOW* w)
+{
+  if(g==NULL){
+    printf("GUI is NULL cant Remove!\n");
+    exit(-1);
+  }
+  if(w==NULL){
+    printf("Window is NULL, can't Remove\n");
+    exit(-1);
+  }
+  list_delete(g->windows,&w->w);
 }
