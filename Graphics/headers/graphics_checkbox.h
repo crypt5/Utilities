@@ -21,7 +21,7 @@ int get_checkbox_checked(WIDGET* w);
 int get_checkbox_enable(WIDGET* w);
 int get_checkbox_visible(WIDGET* w);
 
-void set_checkbox_paint_select(WIDGET* w,void(*uselect)(GUI* g, WIDGET* l),void(*ukey_press)(GUI* g,WIDGET* w, char key));
+void set_checkbox_paint_select(WIDGET* w,void(*uselect)(GUI* g,Window win, WIDGET* l),void(*ukey_press)(GUI* g,Window win,WIDGET* w, char key));
 void set_checkbox_callback(WIDGET* w,void(*ucallback)(GUI* g,WIDGET* self, void* data),void* data);
 
 void remove_checkbox_paint_select(WIDGET* w);

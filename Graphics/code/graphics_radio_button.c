@@ -14,7 +14,7 @@ struct radiobutton_data_t{
   Pixmap map;
 };
 
-void paint_radio(GUI* g, WIDGET* w)
+void paint_radio(GUI* g,Window win, WIDGET* w)
 {
   struct radiobutton_data_t* data=w->widget_data;
 
@@ -25,7 +25,7 @@ void paint_radio(GUI* g, WIDGET* w)
       data->map=XCreatePixmap(g->dsp,g->mainWindow,w->width,3*w->height,24);
     }
     else{
-      XCopyArea(g->dsp,data->map,g->mainWindow,g->draw,0,0,w->width,w->height,w->x,w->y);
+      XCopyArea(g->dsp,data->map,win,g->draw,0,0,w->width,w->height,w->x,w->y);
       XFreePixmap(g->dsp,data->map);
       w->width=XTextWidth(g->font,w->string,strlen(w->string))+25;
       w->height=g->font->ascent*2;
@@ -83,11 +83,11 @@ void paint_radio(GUI* g, WIDGET* w)
   // Copy the correct area to screen 
   if((w->status&STATUS_VISIBLE)==0){
     // Not Visible
-    XCopyArea(g->dsp,data->map,g->mainWindow,g->draw,0,0,w->width,w->height,w->x,w->y);
+    XCopyArea(g->dsp,data->map,win,g->draw,0,0,w->width,w->height,w->x,w->y);
   }
   else if((w->status&STATUS_ENABLE)==0){
     // Not enabled
-    XCopyArea(g->dsp,data->map,g->mainWindow,g->draw,0,w->height*2,w->width,w->height,w->x,w->y);
+    XCopyArea(g->dsp,data->map,win,g->draw,0,w->height*2,w->width,w->height,w->x,w->y);
 
     if(data->checked==1){
       if(data->check_color>0){
@@ -96,12 +96,12 @@ void paint_radio(GUI* g, WIDGET* w)
       else{
 	XSetForeground(g->dsp,g->draw, to_gray(0x000000AA));
       }
-      XFillArc(g->dsp,g->mainWindow,g->draw,w->x+w->height/4-1,w->y+w->height/4,10,10,0,360*64);
+      XFillArc(g->dsp,win,g->draw,w->x+w->height/4-1,w->y+w->height/4,10,10,0,360*64);
     }
   }
   else{
     // Normal Painting
-    XCopyArea(g->dsp,data->map,g->mainWindow,g->draw,0,w->height,w->width,w->height,w->x,w->y);
+    XCopyArea(g->dsp,data->map,win,g->draw,0,w->height,w->width,w->height,w->x,w->y);
     if(data->checked==1){
       if(data->check_color>0){
 	XSetForeground(g->dsp,g->draw, data->check_color);
@@ -109,13 +109,13 @@ void paint_radio(GUI* g, WIDGET* w)
       else{
 	XSetForeground(g->dsp,g->draw,0x000000AA);
       }
-      XFillArc(g->dsp,g->mainWindow,g->draw,w->x+w->height/4-1,w->y+w->height/4,10,10,0,360*64);
+      XFillArc(g->dsp,win,g->draw,w->x+w->height/4-1,w->y+w->height/4,10,10,0,360*64);
     }
     
   }
 }
 
-void paint_radio_click(GUI* g, WIDGET* w)
+void paint_radio_click(GUI* g, Window win,WIDGET* w)
 {
   struct radiobutton_data_t* data=w->widget_data;
   if(data->checked==0)
@@ -413,7 +413,7 @@ int get_radio_button_visible(WIDGET* w)
     return 0;
 }
 
-void set_radio_button_paint_select(WIDGET* w,void(*uselect)(GUI* g, WIDGET* l),void(*ukey_press)(GUI* g,WIDGET* w, char key))
+void set_radio_button_paint_select(WIDGET* w,void(*uselect)(GUI* g,Window win, WIDGET* l),void(*ukey_press)(GUI* g,Window win,WIDGET* w, char key))
 {
   if(w==NULL){
     printf("Radio Button is NULL!\n");

@@ -15,7 +15,7 @@ struct textfield_data_t{
   int editable;
   Pixmap map;
 };
-void paint_textfield(GUI* g,WIDGET* w)
+void paint_textfield(GUI* g,Window win,WIDGET* w)
 {
   int width;
   int taken=0;
@@ -74,37 +74,37 @@ void paint_textfield(GUI* g,WIDGET* w)
   }
 
   if((w->status&STATUS_VISIBLE)==0){
-    XCopyArea(g->dsp,data->map,g->mainWindow,g->draw,0,0,w->width,w->height,w->x,w->y);
+    XCopyArea(g->dsp,data->map,win,g->draw,0,0,w->width,w->height,w->x,w->y);
   }
   else if((w->status&STATUS_ENABLE)==0){
-    XCopyArea(g->dsp,data->map,g->mainWindow,g->draw,0,w->height*2,w->width,w->height,w->x,w->y);
+    XCopyArea(g->dsp,data->map,win,g->draw,0,w->height*2,w->width,w->height,w->x,w->y);
     if(data->text_color>0){
       XSetForeground(g->dsp,g->text, to_gray(data->text_color));
-      XDrawString(g->dsp,g->mainWindow,g->text,w->x+4,w->y+w->height/2+w->height/4,w->string,strlen(w->string));
+      XDrawString(g->dsp,win,g->text,w->x+4,w->y+w->height/2+w->height/4,w->string,strlen(w->string));
       XSetForeground(g->dsp,g->text,g->blackColor);
     }
     else{
       XSetForeground(g->dsp,g->text, to_gray(g->blackColor));
-      XDrawString(g->dsp,g->mainWindow,g->text,w->x+4,w->y+w->height/2+w->height/4,w->string,strlen(w->string));
+      XDrawString(g->dsp,win,g->text,w->x+4,w->y+w->height/2+w->height/4,w->string,strlen(w->string));
       XSetForeground(g->dsp,g->text,g->blackColor);
     }
   }
   else{
-    XCopyArea(g->dsp,data->map,g->mainWindow,g->draw,0,w->height,w->width,w->height,w->x,w->y);
+    XCopyArea(g->dsp,data->map,win,g->draw,0,w->height,w->width,w->height,w->x,w->y);
     if(data->text_color>0){
       XSetForeground(g->dsp,g->text,(w->status&STATUS_ENABLE)>0 ? data->text_color : to_gray(data->text_color));
-      XDrawString(g->dsp,g->mainWindow,g->text,w->x+4,w->y+w->height/2+w->height/4,w->string,strlen(w->string));
+      XDrawString(g->dsp,win,g->text,w->x+4,w->y+w->height/2+w->height/4,w->string,strlen(w->string));
       XSetForeground(g->dsp,g->text,g->blackColor);
     }
     else{
       XSetForeground(g->dsp,g->text,(w->status&STATUS_ENABLE)>0 ? g->blackColor : to_gray(g->blackColor));
-      XDrawString(g->dsp,g->mainWindow,g->text,w->x+4,w->y+w->height/2+w->height/4,w->string,strlen(w->string));
+      XDrawString(g->dsp,win,g->text,w->x+4,w->y+w->height/2+w->height/4,w->string,strlen(w->string));
       XSetForeground(g->dsp,g->text,g->blackColor);
     }
   }
 }
 
-void paint_textfield_click(GUI* g, WIDGET* w)
+void paint_textfield_click(GUI* g,Window win, WIDGET* w)
 {
   int i;
   struct textfield_data_t* data=w->widget_data;
@@ -112,16 +112,16 @@ void paint_textfield_click(GUI* g, WIDGET* w)
     i=XTextWidth(g->font,"A",1);
     if(data->text_color>0){
       XSetForeground(g->dsp,g->text,data->text_color);
-      XDrawString(g->dsp,g->mainWindow,g->text,w->x+(i*data->current_pos),w->y+w->height/2+w->height/4,"|",1);
+      XDrawString(g->dsp,win,g->text,w->x+(i*data->current_pos),w->y+w->height/2+w->height/4,"|",1);
       XSetForeground(g->dsp,g->text,g->blackColor);
     }
     else{
-      XDrawString(g->dsp,g->mainWindow,g->text,w->x+(i*data->current_pos),w->y+w->height/2+w->height/4,"|",1);
+      XDrawString(g->dsp,win,g->text,w->x+(i*data->current_pos),w->y+w->height/2+w->height/4,"|",1);
     }
   }
 }
 
-void update_textfield(GUI* g,WIDGET* w, char c)
+void update_textfield(GUI* g,Window win,WIDGET* w, char c)
 {
   struct textfield_data_t* data=w->widget_data;
   int i;
@@ -178,8 +178,8 @@ void update_textfield(GUI* g,WIDGET* w, char c)
       printf("Unknown Control Operator: %d\n",c);
     }
   }
-  paint_textfield(g,w);
-  paint_textfield_click(g,w);
+  paint_textfield(g,win,w);
+  paint_textfield_click(g,win,w);
 }
 
 WIDGET* create_textfield(int x,int y,int max_length)

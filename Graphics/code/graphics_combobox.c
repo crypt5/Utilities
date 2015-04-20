@@ -22,7 +22,7 @@ struct combobox_data_t{
   ustring get_string;
 };
 
-void paint_combobox(GUI* g,WIDGET* w)
+void paint_combobox(GUI* g,Window win,WIDGET* w)
 {
   int i;
   struct combobox_data_t* data=w->widget_data;
@@ -36,20 +36,20 @@ void paint_combobox(GUI* g,WIDGET* w)
       w->string[i]='\0';
   }
   XSetForeground(g->dsp,g->draw,g->whiteColor);
-  XFillRectangle(g->dsp,g->mainWindow,g->draw,w->x,w->y,w->width-20,w->height);
+  XFillRectangle(g->dsp,win,g->draw,w->x,w->y,w->width-20,w->height);
   XSetForeground(g->dsp,g->draw,0x00AAAAAA);
-  XFillRectangle(g->dsp,g->mainWindow,g->draw,w->width-10,w->y,20,w->height);
+  XFillRectangle(g->dsp,win,g->draw,w->width-10,w->y,20,w->height);
   XSetForeground(g->dsp,g->draw,g->blackColor);
-  XDrawRectangle(g->dsp,g->mainWindow,g->draw,w->x,w->y,w->width-20,w->height);
-  XDrawRectangle(g->dsp,g->mainWindow,g->draw,w->width-10,w->y,20,w->height);
+  XDrawRectangle(g->dsp,win,g->draw,w->x,w->y,w->width-20,w->height);
+  XDrawRectangle(g->dsp,win,g->draw,w->width-10,w->y,20,w->height);
 
   //Draw Arrow
-  XDrawLine(g->dsp,g->mainWindow,g->draw,w->width-6,w->y+4,w->width+6,w->y+4);
-  XDrawLine(g->dsp,g->mainWindow,g->draw,w->width-6,w->y+4,w->width,w->y+18);
-  XDrawLine(g->dsp,g->mainWindow,g->draw,w->width,w->y+18,w->width+6,w->y+4);
+  XDrawLine(g->dsp,win,g->draw,w->width-6,w->y+4,w->width+6,w->y+4);
+  XDrawLine(g->dsp,win,g->draw,w->width-6,w->y+4,w->width,w->y+18);
+  XDrawLine(g->dsp,win,g->draw,w->width,w->y+18,w->width+6,w->y+4);
 }
 
-void paint_combobox_clicked(GUI* g, WIDGET* w)
+void paint_combobox_clicked(GUI* g, Window win,WIDGET* w)
 {
   printf("Click\n");
 }

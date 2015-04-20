@@ -12,15 +12,15 @@ struct picture_data_t{
   Pixmap img;
 };
 
-void paint_picture(GUI* g, WIDGET *w)
+void paint_picture(GUI* g, Window win, WIDGET *w)
 {
   struct picture_data_t* data=w->widget_data;
   if((w->status&STATUS_VISIBLE)>0){
-    XCopyArea(g->dsp,data->img,g->mainWindow,g->draw,0,0,w->width,w->height,w->x,w->y);
+    XCopyArea(g->dsp,data->img,win,g->draw,0,0,w->width,w->height,w->x,w->y);
   }
   else{
     XSetForeground(g->dsp,g->draw,g->bgColor);
-    XFillRectangle(g->dsp,g->mainWindow,g->draw,w->x,w->y,w->width,w->height);
+    XFillRectangle(g->dsp,win,g->draw,w->x,w->y,w->width,w->height);
   }
 }
 
@@ -146,7 +146,7 @@ void set_picture_click_callback(WIDGET* w,void(*ucallback)(GUI* g,WIDGET* self,v
   w->data=data;
 }
 
-void set_picture_paint_click(WIDGET* w,void(*uclick)(GUI* g, WIDGET* w))
+void set_picture_paint_click(WIDGET* w,void(*uclick)(GUI* g,Window win, WIDGET* w))
 {
   if(w==NULL){
     printf("WIDGET is NULL!!!\n");
@@ -160,7 +160,7 @@ void set_picture_paint_click(WIDGET* w,void(*uclick)(GUI* g, WIDGET* w))
   w->click=uclick;
 }
 
-void set_picture_paint_select(WIDGET* w,void(*uselect)(GUI* g, WIDGET* w),void(*ukey_press)(GUI* g,WIDGET* w, char key))
+void set_picture_paint_select(WIDGET* w,void(*uselect)(GUI* g,Window win, WIDGET* w),void(*ukey_press)(GUI* g,Window win,WIDGET* w, char key))
 {
   if(w==NULL){
     printf("WIDGET is NULL!!!\n");

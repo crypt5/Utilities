@@ -34,10 +34,10 @@
 typedef struct graphics_widget_t WIDGET;
 #include "graphics.h"
 typedef void(*callback)(GUI* g,WIDGET* self,void* data);
-typedef void(*painter)(GUI* g, WIDGET* w);
-typedef void(*on_click)(GUI* g, WIDGET* w);
-typedef void(*on_select)(GUI* g, WIDGET* w);
-typedef void(*on_keypress)(GUI* g,WIDGET* w, char key);
+typedef void(*painter)(GUI* g,Window win, WIDGET* w);
+typedef void(*on_click)(GUI* g,Window win, WIDGET* w);
+typedef void(*on_select)(GUI* g,Window win, WIDGET* w);
+typedef void(*on_keypress)(GUI* g,Window win,WIDGET* w, char key);
 typedef void(*free_widget)(GUI* g,WIDGET* widget);
 
 struct graphics_widget_t{

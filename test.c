@@ -2,10 +2,22 @@
 #include <unistd.h>
 #include "graphics.h"
 
+void button_call(GUI* g, WIDGET* w, void* data)
+{
+  static int visible=0;
+  set_window_visible(g,(WINDOW*)data,visible);
+  if(visible==0)
+    visible=1;
+  else
+    visible=0;
+}
+
 int main()
 {
   GUI* g=NULL;
   WIDGET* lab=NULL;
+  WIDGET* lab_sub=NULL;
+  WIDGET* show=NULL;
   WINDOW* win=NULL;
 
   g=init_gui();
@@ -13,22 +25,25 @@ int main()
   set_main_size(g,500,500);
 
   lab=create_label("Main Window",100,100);
+  lab_sub=create_label("Sub Window",100,100);
   add_to_main(g,lab);
 
-  win=create_window(g,"test",-1);
+  show=create_button("Show Window",100,140);
+  add_to_main(g,show);
+
+  win=create_window(g,"Sub Window",-1);
   set_window_size(g,win,300,300);
   register_window(g,win);
 
+  add_widget_to_window(win,lab_sub);
+
   show_main(g);
-  int i=0;
+
+  set_button_callback(show,button_call,win);
   while(gui_running(g)){
-    set_window_visible(g,win,i);
     usleep(1000000);
-    if(i==0)
-      i++;
-    else
-      i--;
   }
+
   destroy_gui(g);
   return 0;
 }

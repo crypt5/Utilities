@@ -21,7 +21,7 @@ int get_radio_button_check(WIDGET* w);
 int get_radio_button_enable(WIDGET* w);
 int get_radio_button_visible(WIDGET* w);
 
-void set_radio_button_paint_select(WIDGET* w,void(*uselect)(GUI* g, WIDGET* l),void(*ukey_press)(GUI* g,WIDGET* w, char key));
+void set_radio_button_paint_select(WIDGET* w,void(*uselect)(GUI* g,Window win, WIDGET* l),void(*ukey_press)(GUI* g,Window win,WIDGET* w, char key));
 void set_radio_button_callback(WIDGET* w,void(*ucallback)(GUI* g,WIDGET* self, void* data),void* data);
 
 void remove_radio_button_paint_select(WIDGET* w);

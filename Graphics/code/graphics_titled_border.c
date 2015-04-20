@@ -12,16 +12,16 @@ struct titled_border_data_t{
   int text_color;
 };
 
-void paint_titled_border(GUI* g, WIDGET* w)
+void paint_titled_border(GUI* g,Window win, WIDGET* w)
 {
   int width;
   struct titled_border_data_t* data=w->widget_data;
   width=XTextWidth(g->font,w->string,strlen(w->string))+2;
   XSetForeground(g->dsp,g->draw,g->bgColor);
-  XFillRectangle(g->dsp,g->mainWindow,g->draw,w->x,w->y-g->font->ascent/2,w->width,g->font->ascent);
+  XFillRectangle(g->dsp,win,g->draw,w->x,w->y-g->font->ascent/2,w->width,g->font->ascent);
   if((w->status&STATUS_VISIBLE)==0){
     XSetLineAttributes(g->dsp,g->draw,data->thickness,LineSolid,CapButt,JoinMiter);
-    XDrawRectangle(g->dsp,g->mainWindow,g->draw,w->x,w->y,w->width,w->height);
+    XDrawRectangle(g->dsp,win,g->draw,w->x,w->y,w->width,w->height);
     XSetLineAttributes(g->dsp,g->draw,0,LineSolid,CapButt,JoinMiter);
     return;
   }
@@ -30,17 +30,17 @@ void paint_titled_border(GUI* g, WIDGET* w)
   else
     XSetForeground(g->dsp,g->draw,g->blackColor);
   XSetLineAttributes(g->dsp,g->draw,data->thickness,LineSolid,CapButt,JoinMiter);
-  XDrawRectangle(g->dsp,g->mainWindow,g->draw,w->x,w->y,w->width,w->height);
+  XDrawRectangle(g->dsp,win,g->draw,w->x,w->y,w->width,w->height);
   XSetLineAttributes(g->dsp,g->draw,0,LineSolid,CapButt,JoinMiter);
   XSetForeground(g->dsp,g->draw,g->bgColor);
-  XFillRectangle(g->dsp,g->mainWindow,g->draw,w->x+5,w->y-data->thickness,width,data->thickness*2);
+  XFillRectangle(g->dsp,win,g->draw,w->x+5,w->y-data->thickness,width,data->thickness*2);
   if(data->text_color>0){
     XSetForeground(g->dsp,g->text,data->text_color);
-    XDrawString(g->dsp,g->mainWindow,g->text,w->x+6,w->y+(g->font->ascent/2),(char*)w->string,strlen((char*)w->string));
+    XDrawString(g->dsp,win,g->text,w->x+6,w->y+(g->font->ascent/2),(char*)w->string,strlen((char*)w->string));
     XSetForeground(g->dsp,g->text,g->blackColor);
   }
   else {
-    XDrawString(g->dsp,g->mainWindow,g->text,w->x+6,w->y+(g->font->ascent/2),(char*)w->string,strlen((char*)w->string));
+    XDrawString(g->dsp,win,g->text,w->x+6,w->y+(g->font->ascent/2),(char*)w->string,strlen((char*)w->string));
   }
 }
 

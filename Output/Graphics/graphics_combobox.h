@@ -28,5 +28,4 @@ int get_combobox_visible(WIDGET* w);
 
 //TODO clicked Callback
 //TODO Selected Callback
-
 #endif

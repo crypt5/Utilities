@@ -74,7 +74,7 @@ void destroy_window(GUI* g,WINDOW* win)
 void set_window_visible(GUI* g,WINDOW* win,int visible)
 {
   if(g==NULL){
-    printf("GUI doesn't exist! Can't show window\n");
+    printf("GUI doesn't exist! Can't Set an Icon window\n");
     exit(-1);
   }
   if(win==NULL){
@@ -100,4 +100,65 @@ void set_window_size(GUI* g,WINDOW* win, int height, int width)
     exit(-1);
   }
   XResizeWindow(g->dsp,win->w,width,height);
+}
+
+void set_window_icon(GUI* g, WINDOW* win,char* filename)
+{
+  XWMHints* hint=NULL;
+  Pixmap p;
+  if(g==NULL){
+    printf("Can't set Icon, GUI is NULL\n");
+    exit(-1);
+  }
+  if(win==NULL){
+    printf("Window doesn't exist!\n");
+    exit(-1);
+  }
+  if(strstr(filename, ".xpm") != NULL){
+    if(access(filename,R_OK)!=-1){
+      XpmReadFileToPixmap(g->dsp,win->w,filename,&p,NULL,NULL);
+      hint=XAllocWMHints();
+      hint->flags=IconPixmapHint;
+      hint->icon_pixmap=p;
+      hint->icon_x=0;
+      hint->icon_y=0;
+      XSetWMHints(g->dsp,win->w,hint);
+      XFree(hint);
+    }
+    else{
+      printf("Read access to picture denied or it doens't exist!\n");
+      exit(-2);
+    }
+  }
+  else{
+    printf("Invalid Format!\nHas to be X11 *.xpm format");
+    printf("GIMP can convert images to this format.\n");
+    exit(-2);
+  }
+}
+
+void add_widget_to_window(WINDOW* win, WIDGET* w)
+{
+  if(win==NULL){
+    printf("Window is NULL, can't Add\n");
+    exit(-1);
+  }
+  if(w==NULL){
+    printf("Widget is NULL, Can't add\n");
+    exit(-1);
+  }
+  list_add_tail(win->widgets,w);
+}
+
+void update_window_widget(WINDOW* win, WIDGET* w)
+{
+  if(win==NULL){
+    printf("Window is NULL, can't Add\n");
+    exit(-1);
+  }
+  if(w==NULL){
+    printf("Widget is NULL, Can't add\n");
+    exit(-1);
+  }
+  enqueue(win->updates,w);
 }

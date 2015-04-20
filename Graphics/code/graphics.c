@@ -14,7 +14,7 @@
 
 
 void destroy_gui(GUI* g);
-WIDGET* get_at_coords(GUI* g,int x, int y);
+WIDGET* get_at_coords(LIST* widgets,int x, int y);
 char process_keystroke(GUI* g, XKeyEvent* e);
 
 int to_gray(int color)
@@ -49,6 +49,16 @@ int to_gray(int color)
   re=(alpha<<24)|(red<<16)|(green<<8)|(blue);
   return re;
 }
+int window_comp(void* one, void* two)
+{
+  Window win=*(Window*)one;
+  WINDOW* w=two;
+  if(w->w==win){
+    return 0;
+    printf("EQUAL\n");
+  }
+  return 1;
+}
 
 void fake_free(void* data){}
 
@@ -56,6 +66,7 @@ void* event_loop(void* data)
 {
   GUI* g=NULL;
   Window win;
+  WINDOW* win_data=NULL;
   XEvent e;
   int keep_running,i;
   WIDGET* active=NULL;
@@ -90,16 +101,21 @@ void* event_loop(void* data)
 	break;
       case ButtonPress:
 	if(e.xbutton.button==1){//Left mouse Button
-	  clicked=get_at_coords(g,e.xbutton.x, e.xbutton.y);
+	  if(win==g->mainWindow)
+	    clicked=get_at_coords(g->widgets,e.xbutton.x, e.xbutton.y);
+	  else{
+	    win_data=list_get(g->windows,&win); 
+	    clicked=get_at_coords(win_data->widgets,e.xbutton.x, e.xbutton.y);
+	  }
 	  if(clicked!=NULL){
 	    if(clicked!=selected&&selected!=NULL){
-	      selected->paint(g,selected);
+	      selected->paint(g,win,selected);
 	      selected=NULL;
 	    }
 	    if((clicked->flags&(CLICKABLE|SELECTABLE))>0){
 		active=clicked;
 		if(active->click!=NULL)
-		  active->click(g,active);
+		  active->click(g,win,active);
 	    }
 	    else{
 	      active=NULL;
@@ -108,36 +124,41 @@ void* event_loop(void* data)
 	  else{
 	    active=NULL;
 	    if(selected!=NULL)
-	      selected->paint(g,selected);
+	      selected->paint(g,win,selected);
 	    selected=NULL;
 	  }
 	}
 	break;
       case ButtonRelease:
 	if(e.xbutton.button==1){//Left mouse Button
-	  clicked=get_at_coords(g,e.xbutton.x, e.xbutton.y);
+	  if(win==g->mainWindow)
+	    clicked=get_at_coords(g->widgets,e.xbutton.x, e.xbutton.y);
+	  else{
+	    win_data=list_get(g->windows,&win); 
+	    clicked=get_at_coords(win_data->widgets,e.xbutton.x, e.xbutton.y);
+	  }
 	  if(clicked!=NULL){
 	    if(clicked==active){
 	      if((clicked->flags&CLICKABLE)>0){
 		if(active->call!=NULL)
 		  active->call(g,active,active->data);
-		active->paint(g,active);
+		active->paint(g,win,active);
 	      }
 	      if((clicked->flags&SELECTABLE)>0){
 		selected=clicked;
-		selected->click(g,selected);
+		selected->click(g,win,selected);
 	      }
 	    }
 	    else{
 	      if(active!=NULL){
-		active->paint(g,active);
+		active->paint(g,win,active);
 	      }
 	      active=NULL;
 	    }
 	  }
 	  else{
 	    if(active!=NULL)
-	      active->paint(g,active);
+	      active->paint(g,win,active);
 	    active=NULL;
 	  }
 	}
@@ -146,16 +167,25 @@ void* event_loop(void* data)
 	if(selected!=NULL){
 	  key=process_keystroke(g,&e.xkey);
 	  if(selected->key_press!=NULL)
-	    selected->key_press(g,selected,key);
+	    selected->key_press(g,win,selected,key);
 	}
 	break;
       case Expose:
 	//TODO Smart Repainting Code
 	//break;
       case MapNotify: 
-	for(i=0;i<list_length(g->widgets);i++){
-	  temp=(WIDGET*)list_get_pos(g->widgets,i);
-	  temp->paint(g,temp);
+	if(win==g->mainWindow){
+	  for(i=0;i<list_length(g->widgets);i++){
+	    temp=(WIDGET*)list_get_pos(g->widgets,i);
+	    temp->paint(g,win,temp);
+	  }
+	}
+	else{
+	  win_data=list_get(g->windows,&win); 
+	  for(i=0;i<list_length(win_data->widgets);i++){
+	    temp=(WIDGET*)list_get_pos(win_data->widgets,i);
+	    temp->paint(g,win,temp);
+	  }
 	}
 	break;
       case UnmapNotify:
@@ -172,7 +202,17 @@ void* event_loop(void* data)
       pthread_mutex_lock(&g->lock);
       if(is_queue_empty(g->updates)!=1){
 	temp=dequeue(g->updates);
-	temp->paint(g,temp);
+	temp->paint(g,win,temp);
+      }
+      else{
+	//TODO Paint sub window update
+	for(i=0;i<list_length(g->windows);i++){
+	  win_data=list_get_pos(g->windows,i); 
+	  if(is_queue_empty(win_data->updates)!=1){
+	    temp=dequeue(win_data->updates);
+	    temp->paint(g,win,temp);
+	  }
+	}
       }
       pthread_mutex_unlock(&g->lock);
     }
@@ -217,7 +257,7 @@ GUI* init_gui()
 
   g->widgets=list_init(fake_free,NULL);
   g->updates=init_queue(fake_free);
-  g->windows=list_init(fake_free,NULL);
+  g->windows=list_init(fake_free,window_comp);
 
   g->font=XLoadQueryFont(g->dsp,"*9x15*");
   return g;
@@ -385,13 +425,13 @@ void add_to_main(GUI* g,WIDGET* w)
 
 
 
-WIDGET* get_at_coords(GUI* g,int x, int y)
+WIDGET* get_at_coords(LIST* widgets,int x, int y)
 {
   int i;
   WIDGET* temp=NULL;
 
-  for(i=0;i<list_length(g->widgets);i++){
-    temp=list_get_pos(g->widgets,i);
+  for(i=0;i<list_length(widgets);i++){
+    temp=list_get_pos(widgets,i);
     if((temp->flags!=NONE)&&((temp->status&STATUS_VISIBLE)>0)&&((temp->status&STATUS_ENABLE)>0)){
       if(x>temp->x&&x<temp->x+temp->width){
 	if(y>temp->y&&y<temp->y+temp->height){
@@ -526,5 +566,4 @@ void register_window(GUI* g, WINDOW* w)
     exit(-1);
   }
   list_add_tail(g->windows,w);
-  XMapWindow(g->dsp,w->w);
 }

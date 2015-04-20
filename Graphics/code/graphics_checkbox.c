@@ -15,7 +15,7 @@ struct checkbox_data_t{
   Pixmap map;
 };
 
-void paint_checkbox(GUI* g, WIDGET* w)
+void paint_checkbox(GUI* g,Window win, WIDGET* w)
 {
   struct checkbox_data_t* data=w->widget_data;
 
@@ -26,7 +26,7 @@ void paint_checkbox(GUI* g, WIDGET* w)
       data->map=XCreatePixmap(g->dsp,g->mainWindow,w->width,3*w->height,24);
     }
     else{
-      XCopyArea(g->dsp,data->map,g->mainWindow,g->draw,0,0,w->width,w->height,w->x,w->y);
+      XCopyArea(g->dsp,data->map,win,g->draw,0,0,w->width,w->height,w->x,w->y);
       XFreePixmap(g->dsp,data->map);
       w->width=XTextWidth(g->font,w->string,strlen(w->string))+20;
       w->height=g->font->ascent*2;
@@ -83,52 +83,52 @@ void paint_checkbox(GUI* g, WIDGET* w)
   // Copy the correct area to screen 
   if((w->status&STATUS_VISIBLE)==0){
     // Not Visible
-    XCopyArea(g->dsp,data->map,g->mainWindow,g->draw,0,0,w->width,w->height,w->x,w->y);
+    XCopyArea(g->dsp,data->map,win,g->draw,0,0,w->width,w->height,w->x,w->y);
   }
   else if((w->status&STATUS_ENABLE)==0){
     // Not enabled
-    XCopyArea(g->dsp,data->map,g->mainWindow,g->draw,0,w->height*2,w->width,w->height,w->x,w->y);
+    XCopyArea(g->dsp,data->map,win,g->draw,0,w->height*2,w->width,w->height,w->x,w->y);
     if(data->checked==1){
       if(data->check_color>0)
 	XSetForeground(g->dsp,g->draw,to_gray(data->check_color));
       else
 	XSetForeground(g->dsp,g->draw, to_gray(0x0000AA00));
       //Short Leg
-      XDrawLine(g->dsp,g->mainWindow,g->draw,w->x+2,w->y+9,w->x+7,w->y+14);
-      XDrawLine(g->dsp,g->mainWindow,g->draw,w->x+2,w->y+10,w->x+7,w->y+15);
-      XDrawLine(g->dsp,g->mainWindow,g->draw,w->x+2,w->y+11,w->x+7,w->y+16);
-      XDrawLine(g->dsp,g->mainWindow,g->draw,w->x+2,w->y+12,w->x+7,w->y+17);
+      XDrawLine(g->dsp,win,g->draw,w->x+2,w->y+9,w->x+7,w->y+14);
+      XDrawLine(g->dsp,win,g->draw,w->x+2,w->y+10,w->x+7,w->y+15);
+      XDrawLine(g->dsp,win,g->draw,w->x+2,w->y+11,w->x+7,w->y+16);
+      XDrawLine(g->dsp,win,g->draw,w->x+2,w->y+12,w->x+7,w->y+17);
       //Long Leg
-      XDrawLine(g->dsp,g->mainWindow,g->draw,w->x+7,w->y+14,w->x+12,w->y+5);
-      XDrawLine(g->dsp,g->mainWindow,g->draw,w->x+7,w->y+15,w->x+12,w->y+6);
-      XDrawLine(g->dsp,g->mainWindow,g->draw,w->x+7,w->y+16,w->x+12,w->y+7);
-      XDrawLine(g->dsp,g->mainWindow,g->draw,w->x+7,w->y+17,w->x+12,w->y+8);
+      XDrawLine(g->dsp,win,g->draw,w->x+7,w->y+14,w->x+12,w->y+5);
+      XDrawLine(g->dsp,win,g->draw,w->x+7,w->y+15,w->x+12,w->y+6);
+      XDrawLine(g->dsp,win,g->draw,w->x+7,w->y+16,w->x+12,w->y+7);
+      XDrawLine(g->dsp,win,g->draw,w->x+7,w->y+17,w->x+12,w->y+8);
     }
   }
   else{
     // Normal Painting
-    XCopyArea(g->dsp,data->map,g->mainWindow,g->draw,0,w->height,w->width,w->height,w->x,w->y);
+    XCopyArea(g->dsp,data->map,win,g->draw,0,w->height,w->width,w->height,w->x,w->y);
     if(data->checked==1){
       if(data->check_color>0)
 	XSetForeground(g->dsp,g->draw,data->check_color);
       else
 	XSetForeground(g->dsp,g->draw,0x0000AA00);
       //Short Leg
-      XDrawLine(g->dsp,g->mainWindow,g->draw,w->x+2,w->y+9,w->x+7,w->y+14);
-      XDrawLine(g->dsp,g->mainWindow,g->draw,w->x+2,w->y+10,w->x+7,w->y+15);
-      XDrawLine(g->dsp,g->mainWindow,g->draw,w->x+2,w->y+11,w->x+7,w->y+16);
-      XDrawLine(g->dsp,g->mainWindow,g->draw,w->x+2,w->y+12,w->x+7,w->y+17);
+      XDrawLine(g->dsp,win,g->draw,w->x+2,w->y+9,w->x+7,w->y+14);
+      XDrawLine(g->dsp,win,g->draw,w->x+2,w->y+10,w->x+7,w->y+15);
+      XDrawLine(g->dsp,win,g->draw,w->x+2,w->y+11,w->x+7,w->y+16);
+      XDrawLine(g->dsp,win,g->draw,w->x+2,w->y+12,w->x+7,w->y+17);
       //Long Leg
-      XDrawLine(g->dsp,g->mainWindow,g->draw,w->x+7,w->y+14,w->x+12,w->y+5);
-      XDrawLine(g->dsp,g->mainWindow,g->draw,w->x+7,w->y+15,w->x+12,w->y+6);
-      XDrawLine(g->dsp,g->mainWindow,g->draw,w->x+7,w->y+16,w->x+12,w->y+7);
-      XDrawLine(g->dsp,g->mainWindow,g->draw,w->x+7,w->y+17,w->x+12,w->y+8);
+      XDrawLine(g->dsp,win,g->draw,w->x+7,w->y+14,w->x+12,w->y+5);
+      XDrawLine(g->dsp,win,g->draw,w->x+7,w->y+15,w->x+12,w->y+6);
+      XDrawLine(g->dsp,win,g->draw,w->x+7,w->y+16,w->x+12,w->y+7);
+      XDrawLine(g->dsp,win,g->draw,w->x+7,w->y+17,w->x+12,w->y+8);
     }
   }
 
 }
 
-void paint_checkbox_click(GUI* g, WIDGET* w)
+void paint_checkbox_click(GUI* g,Window win, WIDGET* w)
 {
   struct checkbox_data_t* data=w->widget_data;
   if(data->checked==0)
@@ -394,7 +394,7 @@ int get_checkbox_visible(WIDGET* w)
     return 0;
 }
 
-void set_checkbox_paint_select(WIDGET* w,void(*uselect)(GUI* g, WIDGET* l),void(*ukey_press)(GUI* g,WIDGET* w, char key))
+void set_checkbox_paint_select(WIDGET* w,void(*uselect)(GUI* g,Window win, WIDGET* l),void(*ukey_press)(GUI* g,Window win,WIDGET* w, char key))
 {
   if(w==NULL){
     printf("Checkbox is NULL!\n");

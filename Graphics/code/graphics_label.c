@@ -15,7 +15,7 @@ struct label_data_t{
   Pixmap map;
 };
 
-void paint_label(GUI* g, WIDGET* w)
+void paint_label(GUI* g,Window win, WIDGET* w)
 {
   struct label_data_t* data=w->widget_data;
  
@@ -27,7 +27,7 @@ void paint_label(GUI* g, WIDGET* w)
       data->map=XCreatePixmap(g->dsp,g->mainWindow,w->width,3*w->height,24);
     }
     else{
-      XCopyArea(g->dsp,data->map,g->mainWindow,g->draw,0,0,w->width,w->height,w->x,w->y);
+      XCopyArea(g->dsp,data->map,win,g->draw,0,0,w->width,w->height,w->x,w->y);
       XFreePixmap(g->dsp,data->map);
       w->width=XTextWidth(g->font,w->string,strlen(w->string))+6;
       w->height=g->font->ascent*2;
@@ -96,11 +96,11 @@ void paint_label(GUI* g, WIDGET* w)
 
   // Copy the correct area to screen 
   if((w->status&STATUS_VISIBLE)==0)
-    XCopyArea(g->dsp,data->map,g->mainWindow,g->draw,0,0,w->width,w->height,w->x,w->y);
+    XCopyArea(g->dsp,data->map,win,g->draw,0,0,w->width,w->height,w->x,w->y);
   else if((w->status&STATUS_ENABLE)==0)
-    XCopyArea(g->dsp,data->map,g->mainWindow,g->draw,0,w->height*2,w->width,w->height,w->x,w->y);
+    XCopyArea(g->dsp,data->map,win,g->draw,0,w->height*2,w->width,w->height,w->x,w->y);
   else
-    XCopyArea(g->dsp,data->map,g->mainWindow,g->draw,0,w->height,w->width,w->height,w->x,w->y);
+    XCopyArea(g->dsp,data->map,win,g->draw,0,w->height,w->width,w->height,w->x,w->y);
 
 }
 
@@ -383,7 +383,7 @@ void set_label_click_callback(WIDGET* l,void(*ucallback)(GUI* g,WIDGET* self,voi
   l->flags=l->flags|CLICKABLE;
 }
 
-void set_label_paint_click(WIDGET* l,void(*uclick)(GUI* g, WIDGET* l))
+void set_label_paint_click(WIDGET* l,void(*uclick)(GUI* g,Window win, WIDGET* l))
 {
   if(l==NULL){
     printf("Label is NULL!!!\n");
@@ -397,7 +397,7 @@ void set_label_paint_click(WIDGET* l,void(*uclick)(GUI* g, WIDGET* l))
   l->flags=l->flags|CLICKABLE;
 }
 
-void set_label_paint_select(WIDGET* l,void(*uselect)(GUI* g, WIDGET* l),void(*ukey_press)(GUI* g,WIDGET* w,char key))
+void set_label_paint_select(WIDGET* l,void(*uselect)(GUI* g,Window win, WIDGET* l),void(*ukey_press)(GUI* g,Window win,WIDGET* w,char key))
 {  
   if(l==NULL){
     printf("Label is NULL!!!\n");

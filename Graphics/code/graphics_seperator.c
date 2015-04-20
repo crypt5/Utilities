@@ -11,26 +11,26 @@ struct seperator_data_t{
   int thickness;
 };
 
-void paint_seperator(GUI* g, WIDGET* w)
+void paint_seperator(GUI* g, Window win,WIDGET* w)
 {
   struct seperator_data_t* data=w->widget_data;
   if((w->status&STATUS_VISIBLE)==0){
     XSetForeground(g->dsp,g->draw,g->bgColor);
     XSetLineAttributes(g->dsp,g->draw,data->thickness,LineSolid,CapButt,JoinMiter);
-    XDrawLine(g->dsp,g->mainWindow,g->draw,w->x,w->y,w->x+w->width,w->y);
+    XDrawLine(g->dsp,win,g->draw,w->x,w->y,w->x+w->width,w->y);
     XSetLineAttributes(g->dsp,g->draw,1,LineSolid,CapButt,JoinMiter);
   }
   else{
     if(data->color>-1){
       XSetForeground(g->dsp,g->draw,data->color);
       XSetLineAttributes(g->dsp,g->draw,data->thickness,LineSolid,CapButt,JoinMiter);
-      XDrawLine(g->dsp,g->mainWindow,g->draw,w->x,w->y,w->x+w->width,w->y);
+      XDrawLine(g->dsp,win,g->draw,w->x,w->y,w->x+w->width,w->y);
       XSetLineAttributes(g->dsp,g->draw,1,LineSolid,CapButt,JoinMiter);
     }
     else {
       XSetForeground(g->dsp,g->draw,g->blackColor);
       XSetLineAttributes(g->dsp,g->draw,data->thickness,LineSolid,CapButt,JoinMiter);
-      XDrawLine(g->dsp,g->mainWindow,g->draw,w->x,w->y,w->x+w->width,w->y);
+      XDrawLine(g->dsp,win,g->draw,w->x,w->y,w->x+w->width,w->y);
       XSetLineAttributes(g->dsp,g->draw,1,LineSolid,CapButt,JoinMiter);
     }
   }
