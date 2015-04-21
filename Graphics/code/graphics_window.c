@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <X11/Xlib.h>
+#include <X11/Xatom.h>
 #include <X11/Xutil.h>
 #include <X11/XKBlib.h>
 #include <X11/xpm.h>
@@ -163,6 +164,25 @@ void update_window_widget(WINDOW* win, WIDGET* w)
   }
   enqueue(win->updates,w);
 }
+
+void refresh_window(GUI* g,WINDOW* win)
+{
+  if(g==NULL){
+    printf("GUI is NULL, Can't Refresh\n");
+    exit(-1);
+  }
+  if(win==NULL){
+    printf("Window is NULL, can't Add\n");
+    exit(-1);
+  }
+  pthread_mutex_lock(&g->lock);
+  XClearWindow(g->dsp,win->w);
+  int i;
+  for(i=0;i<list_length(win->widgets);i++)
+    enqueue(win->updates,list_get_pos(win->widgets,i));
+  pthread_mutex_unlock(&g->lock);
+}
+
 void ok_popup_callback(GUI* g, WIDGET* w,void* data){*(int*)data=1;}
 int ok_popup(GUI* g,char* message, char* title,int popup_type)
 {
@@ -172,6 +192,11 @@ int ok_popup(GUI* g,char* message, char* title,int popup_type)
   WIDGET* but=NULL;
 
   win=create_window(g,title,-1);
+
+  //Atom stateAbove = XInternAtom(g->dsp, "_NET_WM_STATE_ABOVE", False);
+  //XChangeProperty(g->dsp, win->w, XInternAtom(g->dsp, "_NET_WM_STATE", False), XA_ATOM, 32, PropModeReplace, (unsigned char *) &stateAbove, 1);
+
+
   set_window_size(g,win,150,500);
   lab=create_label(message,75,30);
   but=create_button("OK",230,120);
@@ -182,6 +207,7 @@ int ok_popup(GUI* g,char* message, char* title,int popup_type)
 
   register_window(g,win);
   set_window_visible(g,win,1);
+
   while(clicked==0)
     usleep(5000);  
   

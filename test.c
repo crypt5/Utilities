@@ -40,8 +40,7 @@ int main()
   set_button_callback(show,button_call,win);
   show_main(g);
 
-  int re=ok_popup(g,"This is a Warning","Warning",POPUP_TYPE_WARNING);
-  printf("Return: %d\n",re);
+  ok_popup(g,"This is a Warning","Warning",POPUP_TYPE_WARNING);
 
   while(gui_running(g)){
     usleep(5000);

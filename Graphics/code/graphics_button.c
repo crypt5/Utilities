@@ -171,8 +171,6 @@ void destroy_button(GUI* g,WIDGET* w)
     printf("Widget not a button!\n");
     exit(-2);
   }
-  struct button_data_t* data=w->widget_data;
-  //XFreePixmap(g->dsp,data->map);
   free(w->widget_data);
   free(w->string);
   free(w);

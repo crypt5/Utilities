@@ -254,9 +254,10 @@ void* list_get_pos(LIST* l,int index)
     printf("List is NULL, can't search\n");
     exit(-1);
   }
-  if(index>l->elements)
+  if(index>=l->elements){
+    printf("Index Greater then Length\n");
     return NULL;
-
+  }
   temp=l->head;
   for(i=1;i<=index;i++){
     temp=temp->next;

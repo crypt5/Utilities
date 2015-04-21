@@ -566,7 +566,9 @@ void register_window(GUI* g, WINDOW* w)
     printf("Window is NULL, can't add\n");
     exit(-1);
   }
+  pthread_mutex_lock(&g->lock);
   list_add_tail(g->windows,w);
+  pthread_mutex_unlock(&g->lock);
 }
 void unregister_window(GUI* g, WINDOW* w)
 {
@@ -578,5 +580,7 @@ void unregister_window(GUI* g, WINDOW* w)
     printf("Window is NULL, can't Remove\n");
     exit(-1);
   }
+  pthread_mutex_lock(&g->lock);
   list_delete(g->windows,&w->w);
+  pthread_mutex_unlock(&g->lock);
 }

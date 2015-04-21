@@ -158,8 +158,6 @@ void destroy_label(GUI* g,WIDGET* w)
     printf("Label is NULL!\n");
     exit(-2);
   }
-  struct label_data_t* data=w->widget_data;
-  //XFreePixmap(g->dsp,data->map);
   free(w->string);
   free(w->widget_data);
   free(w);

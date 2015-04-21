@@ -193,8 +193,6 @@ void destroy_checkbox(GUI* g,WIDGET* w)
     printf("Not a Checkbox!\n");
     exit(-2);
   }
-  struct checkbox_data_t* data=w->widget_data;
-  //XFreePixmap(g->dsp,data->map);
   free(w->string);
   free(w->widget_data);
   free(w);
