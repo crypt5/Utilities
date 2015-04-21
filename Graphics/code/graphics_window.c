@@ -19,7 +19,6 @@ void fake_free2(void* data){}
 WINDOW* create_window(GUI* g,char* title, int bgColor)
 {
   WINDOW* w=NULL;
-  Window win;
   int bg;
   if(g==NULL){
     printf("Main GUI is not created\n");
@@ -35,17 +34,17 @@ WINDOW* create_window(GUI* g,char* title, int bgColor)
   else
     bg=bgColor;
 
-  win=XCreateSimpleWindow(g->dsp,DefaultRootWindow(g->dsp),0,0,100,100,0,0,bg);
-  XSelectInput(g->dsp, win, StructureNotifyMask|KeyReleaseMask|ButtonPressMask|ButtonReleaseMask|ExposureMask);
+  w->w=XCreateSimpleWindow(g->dsp,DefaultRootWindow(g->dsp),0,0,100,100,0,0,bg);
+  XSelectInput(g->dsp, w->w, StructureNotifyMask|KeyReleaseMask|ButtonPressMask|ButtonReleaseMask|ExposureMask);
 
   if(title!=NULL)
-    XStoreName(g->dsp,win,title);
+    XStoreName(g->dsp,w->w,title);
   else
-    XStoreName(g->dsp,win,"No Title");
-  w->w=win;
+    XStoreName(g->dsp,w->w,"No Title");
   w->widgets=list_init(fake_free2,NULL);
   w->updates=init_queue(fake_free2);
   XSetWMProtocols(g->dsp, w->w, &g->wm_delete_window, 1);
+  
   return w;
 }
 
@@ -192,10 +191,12 @@ int ok_popup(GUI* g,char* message, char* title,int popup_type)
   WIDGET* but=NULL;
 
   win=create_window(g,title,-1);
-
-  //Atom stateAbove = XInternAtom(g->dsp, "_NET_WM_STATE_ABOVE", False);
-  //XChangeProperty(g->dsp, win->w, XInternAtom(g->dsp, "_NET_WM_STATE", False), XA_ATOM, 32, PropModeReplace, (unsigned char *) &stateAbove, 1);
-
+  
+  pthread_mutex_lock(&g->lock);
+  Atom stateAbove=XInternAtom(g->dsp,"_NET_WM_STATE_ABOVE",0);
+  Atom desc=XInternAtom(g->dsp,"_NET_WM_STATE",0);
+  XChangeProperty(g->dsp,win->w,desc,XA_ATOM,32,PropModeReplace,(unsigned char *)&stateAbove,1);
+  pthread_mutex_unlock(&g->lock);
 
   set_window_size(g,win,150,500);
   lab=create_label(message,75,30);
