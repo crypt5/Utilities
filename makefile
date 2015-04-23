@@ -13,12 +13,12 @@ GRAPHICS_OBJ=$(addprefix Graphics/objects/,$(notdir $(GRAPHICS_SRC:.c=.o)))
 IO_SRC=$(wildcard BBBio/*.c)
 IO_OBJ=$(IO_SRC:.c=.o)
 
-LIBS=-lgraphics -llogger -lconfig -lBBBio
+LIBS=-lgraphics -llogger -lconfig -lBBBio -ldata_logger
 RPATH=-Wl,-rpath,Output,-rpath,Output/Graphics,-rpath,Output/BBBio
 XFLAGS=`pkg-config --libs x11`
 LINKCOM=-IOutput -IOutput/Graphics -IOutput/BBBio -LOutput -LOutput/Graphics -LOutput/BBBio
 
-build-all: config logger graphics BBBio test
+build-all: config logger graphics BBBio data_logger test
 
 #Build Test code
 test: test.c
@@ -54,6 +54,11 @@ logger: queue Logger/logger.c Logger/logger.h
 	$(CC) -shared -o Output/liblogger.so Logger/logger.o $(STRUCT)queue.o -lpthread
 	cp Logger/logger.h Output/logger.h
 
+#Data Logger Builder 
+data_logger: queue Logger/data_logger.c Logger/data_logger.h  
+	$(CC) $(CFLAGS) $(OFLAGS) Logger/data_logger.c -o Logger/data_logger.o
+	$(CC) -shared -o Output/libdata_logger.so Logger/data_logger.o $(STRUCT)queue.o -lpthread
+	cp Logger/data_logger.h Output/data_logger.h
 #Graphics Build
 graphics: link $(GRAPHICS_OBJ) $(GRAPHC)graphics.c
 	mkdir -p Output/Graphics

@@ -299,6 +299,7 @@ void destroy_gui(GUI* g)
     printf("GUI Never Opened\n");
     exit(-1);
   }
+  XUnmapWindow(g->dsp,g->mainWindow);
   pthread_mutex_lock(&g->lock);
   g->run=0;
   pthread_mutex_unlock(&g->lock);
@@ -385,10 +386,9 @@ void set_main_icon(GUI* g,char* filename)
     if(access(filename,R_OK)!=-1){
       XpmReadFileToPixmap(g->dsp,g->mainWindow,filename,&p,NULL,NULL);
       hint=XAllocWMHints();
-      hint->flags=IconPixmapHint;
+      hint->flags=IconPixmapHint|IconMaskHint;
       hint->icon_pixmap=p;
-      hint->icon_x=0;
-      hint->icon_y=0;
+      hint->icon_mask=p;
       XSetWMHints(g->dsp,g->mainWindow,hint);
       XFree(hint);
     }
