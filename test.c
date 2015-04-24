@@ -6,7 +6,7 @@ int main()
 {
   GUI* g=NULL;
 
-  g=init_gui();
+  g=init_gui(NULL);
   create_main_window(g,"Main Window");
   set_main_icon(g,"pic.xpm");
   set_main_size(g,500,500);

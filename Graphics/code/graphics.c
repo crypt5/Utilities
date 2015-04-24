@@ -226,7 +226,7 @@ void* event_loop(void* data)
   return NULL;
 }
 
-GUI* init_gui()
+GUI* init_gui(char* address)
 {
   GUI* g=NULL;
   Display* d=NULL;
@@ -238,7 +238,7 @@ GUI* init_gui()
     exit(-1);
   }
 
-  d=XOpenDisplay(NULL);
+  d=XOpenDisplay(address);
   if(d==NULL){
     printf("Could not open display\n");
     exit(-1);
