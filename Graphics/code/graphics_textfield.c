@@ -136,7 +136,7 @@ void update_textfield(GUI* g,Window win,WIDGET* w, char c)
     }
     data->current_pos++;
   }
-  else if(c<' '){
+  else if(data->editable==1&&c<' '){
     switch(c){
     case 0:
       //No Operation return from key parsing function
