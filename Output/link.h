@@ -13,4 +13,7 @@ int list_length(LIST* l);
 int is_list_empty(LIST* l);
 void list_destroy(LIST* l);
 
+void list_walk_reset(LIST* l);
+void* list_get_next(LIST* l);
+
 #endif

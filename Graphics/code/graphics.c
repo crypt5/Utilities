@@ -177,17 +177,17 @@ void* event_loop(void* data)
 	//break;
       case MapNotify: 
 	if(win==g->mainWindow){
-	  for(i=0;i<list_length(g->widgets);i++){
-	    temp=(WIDGET*)list_get_pos(g->widgets,i);
+	  list_walk_reset(g->widgets);
+	  while((temp=(WIDGET*)list_get_next(g->widgets))!=NULL){
 	    temp->paint(g,win,temp);
 	  }
 	}
 	else{
 	  win_data=list_get(g->windows,&win); 
 	  if(win_data!=NULL){
-	    for(i=0;i<list_length(win_data->widgets);i++){
-	      temp=(WIDGET*)list_get_pos(win_data->widgets,i);
-	      temp->paint(g,win,temp);
+	    list_walk_reset(win_data->widgets);
+	    while((temp=(WIDGET*)list_get_next(win_data->widgets))!=NULL){
+		  temp->paint(g,win,temp);
 	    }
 	  }
 	}
@@ -428,11 +428,9 @@ void add_to_main(GUI* g,WIDGET* w)
 
 WIDGET* get_at_coords(LIST* widgets,int x, int y)
 {
-  int i;
   WIDGET* temp=NULL;
-
-  for(i=0;i<list_length(widgets);i++){
-    temp=list_get_pos(widgets,i);
+  list_walk_reset(widgets);
+  while((temp=list_get_next(widgets))!=NULL){
     if((temp->flags!=NONE)&&((temp->status&STATUS_VISIBLE)>0)&&((temp->status&STATUS_ENABLE)>0)){
       if(x>temp->x&&x<temp->x+temp->width){
 	if(y>temp->y&&y<temp->y+temp->height){

@@ -15,6 +15,7 @@ struct link_list_t{
   int elements;
   ufree the_free;
   ucomp the_comp;
+  struct list_node_t* next;
   struct list_node_t* head;
   struct list_node_t* tail;
 };
@@ -30,6 +31,7 @@ LIST* list_init(void(*ufree)(void*),int(*ucomp)(void*,void*))
   list->elements=0;
   list->head=NULL;
   list->tail=NULL;
+  list->next=NULL;
   list->the_free=ufree;
   list->the_comp=ucomp;
 
@@ -262,5 +264,29 @@ void* list_get_pos(LIST* l,int index)
   for(i=1;i<=index;i++){
     temp=temp->next;
   }
+  return temp->data;
+}
+
+void list_walk_reset(LIST* l)
+{
+  if(l==NULL){
+    printf("List is NULL, can't reset\n");
+    exit(-1);
+  }
+  l->next=l->head;
+}
+
+void* list_get_next(LIST* l)
+{
+  struct list_node_t* temp=NULL;
+
+  if(l==NULL){
+    printf("List is NULL, can't get next\n");
+    exit(-1);
+  }
+  temp=l->next;
+  if(temp==NULL)
+    return NULL;
+  l->next=temp->next;
   return temp->data;
 }
