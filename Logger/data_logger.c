@@ -83,8 +83,11 @@ DATA_LOGGER *data_logger_init(char* filename)
 
 void data_logger_log(DATA_LOGGER *log,char* message)
 {
+  char *sub;
+  sub=malloc(strlen(message)+1);
+  strcpy(sub,message);
   pthread_mutex_lock(&log->lock);
-  enqueue(log->lines,message);
+  enqueue(log->lines,sub);
   pthread_mutex_unlock(&log->lock);
 }
 
