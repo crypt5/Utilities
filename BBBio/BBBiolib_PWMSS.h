@@ -7,7 +7,7 @@
 #define BBBIO_PWMSS2	2
 
 /* ---------------------------------------------------------------------------- */
-int BBBIO_PWMSS_Setting(unsigned int PWMID , float HZ ,float dutyA ,float dutyB);
+int BBBIO_PWMSS_Setting(unsigned int PWMID, float HZ, float dutyA, float dutyB);
 int BBBIO_PWM_Init();
 void BBBIO_PWM_Release();
 int BBBIO_PWMSS_Status(unsigned int PWMID);

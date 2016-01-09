@@ -12,7 +12,7 @@
  * v2.1 November 2013 - VagetableAvenger (BBBlib)
  * v2.2 November 2013 - VagetableAvenger (BBBlib) : add GPIO Enable/Disable function
  * v2.4 November.23 2013 - VagetableAvenger (BBBlib) : add whole GPIO control function (I/O and direction set)
-*/
+ */
 
 #ifndef _BBBIOLIB_H_
 #define _BBBIOLIB_H_
@@ -26,7 +26,6 @@ extern "C" {
 #include "BBBiolib_McSPI.h"
 #include "BBBiolib_ADCTSC.h"
 
-
 #define BBBIO_GPIO_MODULE	0x1
 #define BBBIO_PWM_MODULE	0x2
 #define BBBIO_MCSPI_MODULE	0x4
@@ -34,21 +33,15 @@ extern "C" {
 
 //#define BBBIO_GPIO0_MODULE	(BBBIO_GPIO_MODULE << 8 | BBBIO_GPIO_0)
 
-
-
-
-
 //#define BBBIO_LIB_DBG
 #define BBBIO_DIR_IN 0
 #define BBBIO_DIR_OUT 1
-
 
 /* ----------------------------------------------------------------------- */
 /* enable pinmux functionality
  * not implemented yet (User space not support , privilige invalid)
  */
 #define BBBIO_PINMUX_EN 0
-
 
 #define BBBIO_PINMUX_SLEWCTRL	(1<<6)
 #define BBBIO_PINMUX_FAST_RATE	(BBBIO_PINMUX_SLEWCTRL | (0<<6)<<8)
@@ -76,14 +69,15 @@ extern "C" {
 #define BBBIO_PINMUX_MODE_6	(BBBIO_PINMUX_MODE | (0x6)<<8)
 #define BBBIO_PINMUX_MODE_7	(BBBIO_PINMUX_MODE | (0x7)<<8)
 
-int BBBIO_sys_pinmux_check(unsigned int port, unsigned int pin, unsigned int Cflag);
+int BBBIO_sys_pinmux_check(unsigned int port, unsigned int pin,
+		unsigned int Cflag);
 
 /* ----------------------------------------------------------------------
  * Control Module Registers
  * 	@Source : AM335x Technical Reference Manual ,page 1123~1127 , Table 9-10. CONTROL_MODULE REGISTERS
  *
  * 	@note : this library only include some register .
-*/
+ */
 #define BBBIO_CONTROL_MODULE 0x44e10000
 #define BBBIO_CONTROL_LEN 0x2000
 
@@ -245,12 +239,11 @@ int BBBIO_sys_pinmux_check(unsigned int port, unsigned int pin, unsigned int Cfl
 #define BBBIO_CM_PER_SPI0_CLKCTRL	0x4C
 #define BBBIO_CM_PER_SPI1_CLKCTRL       0x50
 
-
 /* ----------------------------------------------------------------------
  * Clock Module Wakeup Registers
  *	@Source : AM335x Technical Reference Manual ,page 976 , Table 8-88. CM_WKUP REGISTERS
  *
-*/
+ */
 
 #define BBBIO_CM_WKUP_ADDR 			0x44e00400
 #define BBBIO_CM_WKUP_OFFSET_FROM_CM_PER	0x400		/* for mapping alignment . BBBIO_CM_WKUP_ADDR is not aligned of page boundary in 4k page .*/
@@ -287,7 +280,6 @@ int BBBIO_sys_pinmux_check(unsigned int port, unsigned int pin, unsigned int Cfl
 #define BBBIO_GPIO_DEBOUNCENABLE	0x150
 #define BBBIO_GPIO_DEBOUNCINGTIME	0x154
 
-
 /* ----------------------------------------------------------------------
  * iolib Basic function
  *
@@ -301,7 +293,6 @@ int iolib_setdir(char port, char pin, char dir);
 
 /* call this when you are done with I/O. Returns 0 on success, -1 on failure */
 int iolib_free(void);
-
 
 /* provides an inaccurate delay ,The maximum delay is 999 msec */
 int iolib_delay_ms(unsigned int msec);
@@ -322,9 +313,8 @@ int BBBIO_sys_init(int flag);
 /* call this when you are done with I/O. Returns 0 on success, -1 on failure */
 int BBBIO_sys_release(void);
 
-
-void BBBIO_sys_GPIO_status() ;
-void BBBIO_sys_Expansion_Header_status(unsigned int port) ;
+void BBBIO_sys_GPIO_status();
+void BBBIO_sys_Expansion_Header_status(unsigned int port);
 
 /* ----------------------------------------------------------------------
  * BBBIO GPIO function
@@ -346,7 +336,6 @@ int BBBIO_set_dir(char port, char pin, char dir);
 inline void BBBIO_set_high(char port, char pin);
 inline void BBBIO_set_low(char port, char pin);
 inline char BBBIO_get(char port, char pin);
-
 
 /* GPIO unit , control "Whole" GPIO pin one time
  *
@@ -389,15 +378,15 @@ inline char BBBIO_get(char port, char pin);
 #define BBBIO_GPIO_PIN_30	(1<< 30)
 #define BBBIO_GPIO_PIN_31	(1<< 31)
 
-int BBBIO_GPIO_set_dir(unsigned int gpio, unsigned int inset , unsigned int outset);
-void BBBIO_GPIO_high(unsigned int gpio ,unsigned int pinset);
-void BBBIO_GPIO_low(unsigned int gpio ,unsigned int pinset);
+int BBBIO_GPIO_set_dir(unsigned int gpio, unsigned int inset,
+		unsigned int outset);
+void BBBIO_GPIO_high(unsigned int gpio, unsigned int pinset);
+void BBBIO_GPIO_low(unsigned int gpio, unsigned int pinset);
 int BBBIO_GPIO_get(char gpio, unsigned int pinset);
 
 #ifdef __cplusplus
- }
+}
 #endif
 
 #endif // _IOLIB_H_
-
 

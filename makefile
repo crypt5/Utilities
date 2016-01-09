@@ -18,7 +18,7 @@ RPATH=-Wl,-rpath,Output,-rpath,Output/Graphics,-rpath,Output/BBBio
 XFLAGS=`pkg-config --libs x11`
 LINKCOM=-IOutput -IOutput/Graphics -IOutput/BBBio -LOutput -LOutput/Graphics -LOutput/BBBio
 
-build-all: config logger graphics BBBio data_logger test
+all: config logger graphics BBBio data_logger test
 
 #Build Test code
 test: test.c

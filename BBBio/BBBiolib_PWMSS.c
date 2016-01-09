@@ -13,7 +13,7 @@
  * @Source : AM335x Technical Reference Manual ,page 1991
  *           Table 15-5. PWMSS REGISTERS
  *
-*/
+ */
 
 #define PWMSS0_MMAP_ADDR	0x48300000
 #define PWMSS1_MMAP_ADDR	0x48302000
@@ -30,7 +30,7 @@
  * @Source : AM335x Technical Reference Manual ,page 2084
  *           Table 15-58. EPWM REGISTERS
  *
-*/
+ */
 #define EPWM_TBCTL	0x0
 #define EPWM_TBSTS	0x2
 #define EPWM_TBPHSHR	0x4
@@ -50,17 +50,15 @@
 #define EPWM_DBFED	0x22
 /*-----------------------------------------------------------------------------------------------*/
 extern int memh;
-extern volatile unsigned int *CM_ptr;	/*c ontrol module */
+extern volatile unsigned int *CM_ptr; /*c ontrol module */
 volatile unsigned int *cm_per_addr;
 
-
-const unsigned int PWMSS_AddressOffset[]={PWMSS0_MMAP_ADDR,
-					  PWMSS1_MMAP_ADDR,
-					  PWMSS2_MMAP_ADDR};
-volatile unsigned int *pwmss_ptr[3]     ={NULL, NULL, NULL} ;
-volatile unsigned int *epwm_ptr[3]      ={NULL, NULL, NULL} ;
-volatile unsigned int *ecap_ptr[3]      ={NULL, NULL, NULL} ;
-volatile unsigned int *eqep_ptr[3]      ={NULL, NULL, NULL} ;
+const unsigned int PWMSS_AddressOffset[] = { PWMSS0_MMAP_ADDR, PWMSS1_MMAP_ADDR,
+		PWMSS2_MMAP_ADDR };
+volatile unsigned int *pwmss_ptr[3] = { NULL, NULL, NULL };
+volatile unsigned int *epwm_ptr[3] = { NULL, NULL, NULL };
+volatile unsigned int *ecap_ptr[3] = { NULL, NULL, NULL };
+volatile unsigned int *eqep_ptr[3] = { NULL, NULL, NULL };
 
 #define TBCTL_CTRMODE_UP        0x0
 #define TBCTL_CTRMODE_DOWN      0x1
@@ -74,16 +72,15 @@ volatile unsigned int *eqep_ptr[3]      ={NULL, NULL, NULL} ;
  *
  *	@return : 0 for disable timebase clock , 1 for enable for timebase clock
  */
-static int PWMSS_TB_clock_check(unsigned int PWMSS_ID)
-{
+static int PWMSS_TB_clock_check(unsigned int PWMSS_ID) {
 	volatile unsigned int* reg;
-	unsigned int reg_value ;
+	unsigned int reg_value;
 
 	/* Control module check */
-	reg =(void *)CM_ptr + BBBIO_PWMSS_CTRL;
-	reg_value = *reg ;
+	reg = (void *) CM_ptr + BBBIO_PWMSS_CTRL;
+	reg_value = *reg;
 
-	return (reg_value & (1 << PWMSS_ID)) ;
+	return (reg_value & (1 << PWMSS_ID));
 }
 
 /* ----------------------------------------------------------------------------------------------- */
@@ -95,18 +92,18 @@ static int PWMSS_TB_clock_check(unsigned int PWMSS_ID)
  *
  *	@return : 1 for success ,  0 for error
  */
-static int PWMSS_module_ctrl(unsigned int PWMSS_ID, int enable)
-{
+static int PWMSS_module_ctrl(unsigned int PWMSS_ID, int enable) {
 	volatile unsigned int *reg = NULL;
-	unsigned int module_set[] = {BBBIO_PWMSS0, BBBIO_PWMSS1, BBBIO_PWMSS2};
-	unsigned int module_clk_set[] = {BBBIO_CM_PER_EPWMSS0_CLKCTRL, BBBIO_CM_PER_EPWMSS1_CLKCTRL, BBBIO_CM_PER_EPWMSS2_CLKCTRL};
+	unsigned int module_set[] = { BBBIO_PWMSS0, BBBIO_PWMSS1, BBBIO_PWMSS2 };
+	unsigned int module_clk_set[] = { BBBIO_CM_PER_EPWMSS0_CLKCTRL,
+			BBBIO_CM_PER_EPWMSS1_CLKCTRL, BBBIO_CM_PER_EPWMSS2_CLKCTRL };
 	int ret = 1;
 
-	reg = (void*)cm_per_addr + module_clk_set[PWMSS_ID];
-	if(enable) {
-		if(PWMSS_TB_clock_check(module_set[PWMSS_ID])) {
+	reg = (void*) cm_per_addr + module_clk_set[PWMSS_ID];
+	if (enable) {
+		if (PWMSS_TB_clock_check(module_set[PWMSS_ID])) {
 			/* Enable module clock */
-			*reg = 0x2;	/* Module enable and fully functional */
+			*reg = 0x2; /* Module enable and fully functional */
 			return ret;
 		}
 #ifdef BBBIO_LIB_DBG
@@ -114,9 +111,9 @@ static int PWMSS_module_ctrl(unsigned int PWMSS_ID, int enable)
 			printf("PWMSS_module_ctrl : PWMSS-%d timebase clock disable in Control Module\n", PWMSS_ID);
 		}
 #endif
-		ret = 0 ;
+		ret = 0;
 	}
-	*reg = 0x3 << 16;	/* Module is disabled and cannot be accessed */
+	*reg = 0x3 << 16; /* Module is disabled and cannot be accessed */
 	return ret;
 }
 
@@ -127,8 +124,7 @@ static int PWMSS_module_ctrl(unsigned int PWMSS_ID, int enable)
  *      @return         : 1 for success , 0 for failed
  */
 
-int BBBIO_PWM_Init()
-{
+int BBBIO_PWM_Init() {
 	int i = 0;
 
 	if (memh == 0) {
@@ -136,42 +132,41 @@ int BBBIO_PWM_Init()
 		printf("BBBIO_PWM_Init: memory not mapped?\n");
 #endif
 		return 0;
-    	}
+	}
 
 	/* Create Memory map */
-	for (i = 0 ; i < 3 ; i ++) {
-		pwmss_ptr[i] = mmap(0, PWMSS_MMAP_LEN, PROT_READ | PROT_WRITE, MAP_SHARED, memh, PWMSS_AddressOffset[i]);
-		if(pwmss_ptr[i] == MAP_FAILED) {
+	for (i = 0; i < 3; i++) {
+		pwmss_ptr[i] = mmap(0, PWMSS_MMAP_LEN, PROT_READ | PROT_WRITE,
+				MAP_SHARED, memh, PWMSS_AddressOffset[i]);
+		if (pwmss_ptr[i] == MAP_FAILED) {
 #ifdef BBBIO_LIB_DBG
 			printf("BBBIO_PWM_Init: PWMSS %d mmap failure!\n", i);
 #endif
-			goto INIT_ERROR ;
+			goto INIT_ERROR;
 		}
-		ecap_ptr[i] = (void *)pwmss_ptr[i] + 0x100 ;
-		eqep_ptr[i] = (void *)pwmss_ptr[i] + 0x180 ;
-		epwm_ptr[i] = (void *)pwmss_ptr[i] + 0x200 ;
+		ecap_ptr[i] = (void *) pwmss_ptr[i] + 0x100;
+		eqep_ptr[i] = (void *) pwmss_ptr[i] + 0x180;
+		epwm_ptr[i] = (void *) pwmss_ptr[i] + 0x200;
 
-		if(!PWMSS_module_ctrl(i, 1)) {
+		if (!PWMSS_module_ctrl(i, 1)) {
 #ifdef BBBIO_LIB_DBG
 			printf("BBBIO_PWM_Init: PWMSS %d clock  failure!\n", i);
 #endif
-			goto INIT_ERROR ;
+			goto INIT_ERROR;
 		}
-    	}
+	}
 	return 1;
 
-INIT_ERROR :
-	BBBIO_PWM_Release();
+	INIT_ERROR: BBBIO_PWM_Release();
 	return 0;
 }
 
 /* ----------------------------------------------------------------------------------------------- */
-void BBBIO_PWM_Release()
-{
+void BBBIO_PWM_Release() {
 	int i = 0;
-	for(i = 0 ; i < 3 ; i ++) {
-		if(pwmss_ptr[i] != NULL) {
-			munmap((void *)pwmss_ptr[i], PWMSS_MMAP_LEN);
+	for (i = 0; i < 3; i++) {
+		if (pwmss_ptr[i] != NULL) {
+			munmap((void *) pwmss_ptr[i], PWMSS_MMAP_LEN);
 			pwmss_ptr[i] = NULL;
 			ecap_ptr[i] = NULL;
 			eqep_ptr[i] = NULL;
@@ -188,45 +183,42 @@ void BBBIO_PWM_Release()
  *
  *      @return         : 1 for success , 0 for failed
  */
-int BBBIO_PWMSS_Status(unsigned int PWMID)
-{
+int BBBIO_PWMSS_Status(unsigned int PWMID) {
 	int param_error = 1;
 	volatile unsigned int* reg;
-	unsigned int reg_value ;
+	unsigned int reg_value;
 
 	if (memh == 0)
-            param_error = 0;
+		param_error = 0;
 
-    	if (PWMID > 2)		/* if input is not EPWMSS 0~ WPEMSS 2 */
-            param_error = 0;
+	if (PWMID > 2) /* if input is not EPWMSS 0~ WPEMSS 2 */
+		param_error = 0;
 
-    	if (param_error == 0) {
+	if (param_error == 0) {
 #ifdef BBBIO_LIB_DBG
 		printf("BBBIO_PWM_Status: parameter error!\n");
 #endif
 		return 0;
 	}
 
-	reg =(void *)CM_ptr + BBBIO_PWMSS_CTRL;
+	reg = (void *) CM_ptr + BBBIO_PWMSS_CTRL;
 
-	reg_value = *reg >> PWMID & 0x01 ;
-	if(reg_value == 0) {
-		printf("PWMSS [%d] Timebase clock Disable , Control Module [pwmss_ctrl register]\n", PWMID);
-	}
-	else {
-		reg=(void *)pwmss_ptr[PWMID] + PWMSS_CLKSTATUS;
-		reg_value = *reg ;
+	reg_value = *reg >> PWMID & 0x01;
+	if (reg_value == 0) {
+		printf(
+				"PWMSS [%d] Timebase clock Disable , Control Module [pwmss_ctrl register]\n",
+				PWMID);
+	} else {
+		reg = (void *) pwmss_ptr[PWMID] + PWMSS_CLKSTATUS;
+		reg_value = *reg;
 
-		printf("PWMSS [%d] :\tCLKSTOP_ACK %d , CLK_EN_ACK %d , CLKSTOP_ACK %d , CLK_EN_ACK %d , CLKSTOP_ACK %d , CLK_EN_ACK %d\n",
-			PWMID ,
-			reg_value >>9 & 0x1 ,
-			reg_value >>8 & 0x1 ,
-			reg_value >>5 & 0x1 ,
-			reg_value >>4 & 0x1 ,
-			reg_value >>1 & 0x1 ,
-			reg_value >>0 & 0x1 );
+		printf(
+				"PWMSS [%d] :\tCLKSTOP_ACK %d , CLK_EN_ACK %d , CLKSTOP_ACK %d , CLK_EN_ACK %d , CLKSTOP_ACK %d , CLK_EN_ACK %d\n",
+				PWMID, reg_value >> 9 & 0x1, reg_value >> 8 & 0x1,
+				reg_value >> 5 & 0x1, reg_value >> 4 & 0x1,
+				reg_value >> 1 & 0x1, reg_value >> 0 & 0x1);
 	}
-	return 1 ;
+	return 1;
 }
 /* ----------------------------------------------------------------------------------------------- */
 /* PWMSS setting
@@ -260,93 +252,95 @@ int BBBIO_PWMSS_Status(unsigned int PWMID)
  *
  * 		accrooding to that , we must find a Divisor value , let X nearest 65535 .
  * 		so , Divisor must  Nearest Cyclens/655350
-*/
+ */
 
-int BBBIO_PWMSS_Setting(unsigned int PWMID , float HZ ,float dutyA ,float dutyB)
-{
+int BBBIO_PWMSS_Setting(unsigned int PWMID, float HZ, float dutyA, float dutyB) {
 	int param_error = 1;
-	volatile unsigned short* reg16 ;
-        if (memh == 0)
-            param_error = 0;
-        if (PWMID > 2)              // if input is not EPWMSS 0~ WPEMSS 2
-            param_error = 0;
-	if (HZ < 0 )
-	    param_error = 0;
-	if(dutyA < 0.0f || dutyA > 100.0f || dutyB < 0.0f || dutyB > 100.0f)
-	    param_error = 0;
+	volatile unsigned short* reg16;
+	if (memh == 0)
+		param_error = 0;
+	if (PWMID > 2) // if input is not EPWMSS 0~ WPEMSS 2
+		param_error = 0;
+	if (HZ < 0)
+		param_error = 0;
+	if (dutyA < 0.0f || dutyA > 100.0f || dutyB < 0.0f || dutyB > 100.0f)
+		param_error = 0;
 
-        if (param_error == 0) {
+	if (param_error == 0) {
 #ifdef BBBIO_LIB_DBG
 		printf("BBBIO_PWMSS_Setting: parameter error!\n");
 #endif
 		return 0;
-        }
+	}
 
-	dutyA /= 100.0f ;
-	dutyB /= 100.0f ;
+	dutyA /= 100.0f;
+	dutyB /= 100.0f;
 
 	/* compute neccessary TBPRD */
-	float Cyclens =0.0f ;
-	float Divisor =0;
-	int i , j ;
-	const float CLKDIV_div[] = {1.0 ,2.0 ,4.0 ,8.0 ,16.0 ,32.0 , 64.0 , 128.0};
-	const float HSPCLKDIV_div[] ={1.0 ,2.0 ,4.0 ,6.0 ,8.0 ,10.0 , 12.0 , 14.0};
-	int NearCLKDIV =7;
-	int NearHSPCLKDIV =7;
-	int NearTBPRD =0;
+	float Cyclens = 0.0f;
+	float Divisor = 0;
+	int i, j;
+	const float CLKDIV_div[] = { 1.0, 2.0, 4.0, 8.0, 16.0, 32.0, 64.0, 128.0 };
+	const float HSPCLKDIV_div[] = { 1.0, 2.0, 4.0, 6.0, 8.0, 10.0, 12.0, 14.0 };
+	int NearCLKDIV = 7;
+	int NearHSPCLKDIV = 7;
+	int NearTBPRD = 0;
 
-	Cyclens = 1000000000.0f / HZ ; /* 10^9 / HZ , comput time per cycle (ns) */
+	Cyclens = 1000000000.0f / HZ; /* 10^9 / HZ , comput time per cycle (ns) */
 
-
-	Divisor =  (Cyclens / 655350.0f) ;	/* am335x provide (128*14) divider , and per TBPRD means 10 ns when divider /1 ,
-						 * and max TBPRD is 65535 , so , the max cycle is 128*14* 65535 *10ns
-						 */
+	Divisor = (Cyclens / 655350.0f); /* am335x provide (128*14) divider , and per TBPRD means 10 ns when divider /1 ,
+	 * and max TBPRD is 65535 , so , the max cycle is 128*14* 65535 *10ns
+	 */
 #ifdef BBBIO_LIB_DBG
 	printf("Cyclens %f , Divisor %f\n", Cyclens, Divisor);
 #endif
 
-	if(Divisor > (128 * 14)) {
+	if (Divisor > (128 * 14)) {
 #ifdef BBBIO_LIB_DBG
 		printf("BBBIO_PWMSS_Setting : Can't generate %f HZ \n", HZ);
 #endif
 		return 0;
-	}
-	else {
+	} else {
 		/* using Exhaustive Attack metho */
-		for(i = 0 ; i < 8 ; i ++) {
-			for(j = 0 ; j < 8 ; j ++) {
-				if((CLKDIV_div[i] * HSPCLKDIV_div[j]) < (CLKDIV_div[NearCLKDIV] * HSPCLKDIV_div[NearHSPCLKDIV]) &&
-				  ((CLKDIV_div[i] * HSPCLKDIV_div[j]) > Divisor)) {
-					NearCLKDIV = i ;
-					NearHSPCLKDIV = j ;
+		for (i = 0; i < 8; i++) {
+			for (j = 0; j < 8; j++) {
+				if ((CLKDIV_div[i] * HSPCLKDIV_div[j])
+						< (CLKDIV_div[NearCLKDIV] * HSPCLKDIV_div[NearHSPCLKDIV])
+						&& ((CLKDIV_div[i] * HSPCLKDIV_div[j]) > Divisor)) {
+					NearCLKDIV = i;
+					NearHSPCLKDIV = j;
 				}
 			}
 		}
 #ifdef BBBIO_LIB_DBG
 		printf("nearest CLKDIV %f , HSPCLKDIV %f\n" ,CLKDIV_div[NearCLKDIV] ,HSPCLKDIV_div[NearHSPCLKDIV]);
 #endif
-		NearTBPRD = (Cyclens / (10.0 *CLKDIV_div[NearCLKDIV] *HSPCLKDIV_div[NearHSPCLKDIV])) ;
+		NearTBPRD =
+				(Cyclens
+						/ (10.0 * CLKDIV_div[NearCLKDIV]
+								* HSPCLKDIV_div[NearHSPCLKDIV]));
 
 #ifdef BBBIO_LIB_DBG
 		printf("nearest TBPRD %d, %f %f\n ",NearTBPRD,NearTBPRD * dutyA, NearTBPRD * dutyB);
 #endif
 
 		/* setting clock diver and freeze time base */
-		reg16=(void*)epwm_ptr[PWMID] +EPWM_TBCTL;
-		*reg16 = TBCTL_CTRMODE_FREEZE | (NearCLKDIV << 10) | (NearHSPCLKDIV << 7);
+		reg16 = (void*) epwm_ptr[PWMID] + EPWM_TBCTL;
+		*reg16 = TBCTL_CTRMODE_FREEZE | (NearCLKDIV << 10)
+				| (NearHSPCLKDIV << 7);
 
 		/*  setting duty A and duty B */
-		reg16=(void*)epwm_ptr[PWMID] +EPWM_CMPB;
-		*reg16 =(unsigned short)((float)NearTBPRD * dutyB);
+		reg16 = (void*) epwm_ptr[PWMID] + EPWM_CMPB;
+		*reg16 = (unsigned short) ((float) NearTBPRD * dutyB);
 
-		reg16=(void*)epwm_ptr[PWMID] +EPWM_CMPA;
-		*reg16 =(unsigned short)((float)NearTBPRD * dutyA);
+		reg16 = (void*) epwm_ptr[PWMID] + EPWM_CMPA;
+		*reg16 = (unsigned short) ((float) NearTBPRD * dutyA);
 
-		reg16=(void*)epwm_ptr[PWMID] +EPWM_TBPRD;
-		*reg16 =(unsigned short)NearTBPRD;
+		reg16 = (void*) epwm_ptr[PWMID] + EPWM_TBPRD;
+		*reg16 = (unsigned short) NearTBPRD;
 
 		/* reset time base counter */
-		reg16 = (void *)epwm_ptr[PWMID] + EPWM_TBCNT;
+		reg16 = (void *) epwm_ptr[PWMID] + EPWM_TBCNT;
 		*reg16 = 0;
 	}
 	return 1;
@@ -360,48 +354,35 @@ int BBBIO_PWMSS_Setting(unsigned int PWMID , float HZ ,float dutyA ,float dutyB)
  *      @example        : BBBIO_PWMSS_Enable(0) ;// Enable PWMSS 0
  */
 
-void BBBIO_ehrPWM_Enable(unsigned int PWMSS_ID)
-{
-	volatile unsigned short *reg16 ;
+void BBBIO_ehrPWM_Enable(unsigned int PWMSS_ID) {
+	volatile unsigned short *reg16;
 
-	reg16=(void*)epwm_ptr[PWMSS_ID] +EPWM_AQCTLA;
-	*reg16 = 0x2 | ( 0x3 << 4) ;
-		
-	reg16=(void*)epwm_ptr[PWMSS_ID] +EPWM_AQCTLB;
-	*reg16 = 0x2 | ( 0x3 << 8) ;
+	reg16 = (void*) epwm_ptr[PWMSS_ID] + EPWM_AQCTLA;
+	*reg16 = 0x2 | (0x3 << 4);
 
-	reg16 = (void *)epwm_ptr[PWMSS_ID] + EPWM_TBCNT;
+	reg16 = (void*) epwm_ptr[PWMSS_ID] + EPWM_AQCTLB;
+	*reg16 = 0x2 | (0x3 << 8);
+
+	reg16 = (void *) epwm_ptr[PWMSS_ID] + EPWM_TBCNT;
 	*reg16 = 0;
 
-        reg16=(void *)epwm_ptr[PWMSS_ID] + EPWM_TBCTL;
+	reg16 = (void *) epwm_ptr[PWMSS_ID] + EPWM_TBCTL;
 	*reg16 &= ~0x3;
 }
 
-void BBBIO_ehrPWM_Disable(unsigned int PWMSS_ID)
-{
- 	volatile unsigned short *reg16 ;
-        reg16=(void *)epwm_ptr[PWMSS_ID] + EPWM_TBCTL;
-        *reg16 |= 0x3;
+void BBBIO_ehrPWM_Disable(unsigned int PWMSS_ID) {
+	volatile unsigned short *reg16;
+	reg16 = (void *) epwm_ptr[PWMSS_ID] + EPWM_TBCTL;
+	*reg16 |= 0x3;
 
-	reg16=(void*)epwm_ptr[PWMSS_ID] +EPWM_AQCTLA;
-	*reg16 = 0x1 | ( 0x3 << 4) ;
-		
-	reg16=(void*)epwm_ptr[PWMSS_ID] +EPWM_AQCTLB;
-	*reg16 = 0x1 | ( 0x3 << 8) ;
+	reg16 = (void*) epwm_ptr[PWMSS_ID] + EPWM_AQCTLA;
+	*reg16 = 0x1 | (0x3 << 4);
 
-	reg16 = (void *)epwm_ptr[PWMSS_ID] + EPWM_TBCNT;
+	reg16 = (void*) epwm_ptr[PWMSS_ID] + EPWM_AQCTLB;
+	*reg16 = 0x1 | (0x3 << 8);
+
+	reg16 = (void *) epwm_ptr[PWMSS_ID] + EPWM_TBCNT;
 	*reg16 = 0;
 }
 //--------------------------------------------------------
-
-
-
-
-
-
-
-
-
-
-
 

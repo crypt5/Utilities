@@ -27,7 +27,6 @@
 #define BBBIO_McSPI_CLK_MODE2	0x2
 #define BBBIO_McSPI_CLK_MODE3	0x3
 
-
 /* Reference AM335x Techinal Reference Manual .
  *	page :4594 , bit 16~18 , Field : IS , DPE1 , DPE0
  */
@@ -55,23 +54,22 @@
 #define BBBIO_McSPI_CLDIV_32768	0xF
 
 //-------------------------------------------------------------------------
-int BBBIO_McSPI_work(unsigned int McSPI_ID, unsigned int chn, unsigned int Tx_data, unsigned int *Rx_data);
+int BBBIO_McSPI_work(unsigned int McSPI_ID, unsigned int chn,
+		unsigned int Tx_data, unsigned int *Rx_data);
 
-int BBBIO_McSPI_Init() ;
+int BBBIO_McSPI_Init();
 
 #define BBBIO_McSPI_Enable(a) BBBIO_McSPI_CLK_set(a,1,0)
 #define BBBIO_McSPI_Disable(a) BBBIO_McSPI_CLK_set(a,0,0)
-int BBBIO_McSPI_CLK_set(unsigned int McSPI_ID ,int enable , int idle) ;
+int BBBIO_McSPI_CLK_set(unsigned int McSPI_ID, int enable, int idle);
 
-int BBBIO_McSPI_channel_ctrl(unsigned int McSPI_ID ,
-                        unsigned int channel,
-                        unsigned int MS,		/* MS		 , maset or slave */
-                        unsigned int TRM ,		/* TRM		 , Tx only / Rx only , TxRx */
-                        unsigned int CLK_div ,		/* Clock Divider , default clock : 48M Hz */
-                        unsigned int CLKmode ,		/* POL/PHA ,     , clock polarity */
-                        unsigned int EPOL ,
-                        unsigned int DataDir ,		/* IS/DPE1/DPE0	 ,data0 Outpu    t data1 Input ,or data0 Input data1 Output */
-                        unsigned int WL);		// WL		 ,word length */
+int BBBIO_McSPI_channel_ctrl(unsigned int McSPI_ID, unsigned int channel,
+		unsigned int MS, /* MS		 , maset or slave */
+		unsigned int TRM, /* TRM		 , Tx only / Rx only , TxRx */
+		unsigned int CLK_div, /* Clock Divider , default clock : 48M Hz */
+		unsigned int CLKmode, /* POL/PHA ,     , clock polarity */
+		unsigned int EPOL, unsigned int DataDir, /* IS/DPE1/DPE0	 ,data0 Outpu    t data1 Input ,or data0 Input data1 Output */
+		unsigned int WL); // WL		 ,word length */
 
 void BBBIO_McSPI_Reset(unsigned int McSPI_ID);
 
