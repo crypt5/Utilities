@@ -9,7 +9,9 @@
 #include <sys/ioctl.h>
 #include <fcntl.h>
 #include <errno.h>
+#include <string.h>
 #include <time.h>
+#include <unistd.h>
 #include "BBBiolib_I2C.h"
 
 
@@ -162,7 +164,7 @@ int delay_ms(unsigned int msec)
     fprintf(stderr, "delay_ms error: delay value needs to be less than 999\n");
     msec=999;
   }
-  a.tv_nsec=((long)(msec))*1E6d;
+  a.tv_nsec=((long)(msec))*1E6;
   a.tv_sec=0;
   if ((ret = nanosleep(&a, NULL)) != 0)
   {

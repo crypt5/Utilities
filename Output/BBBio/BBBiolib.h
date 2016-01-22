@@ -25,6 +25,7 @@ extern "C" {
 #include "BBBiolib_PWMSS.h"
 #include "BBBiolib_McSPI.h"
 #include "BBBiolib_ADCTSC.h"
+#include "BBBiolib_I2C.h"
 
 #define BBBIO_GPIO_MODULE	0x1
 #define BBBIO_PWM_MODULE	0x2
