@@ -556,7 +556,7 @@ int BBBIO_sys_pinmux_check(unsigned int port, unsigned int pin,
 	reg = (void *) CM_ptr + ExpHeader_MODE0[port][pin];
 	reg_value = *reg;
 
-	if (Cflag & BBBIO_PINMUX_SLEWCTRL && (ret == 0)) {
+	if ((Cflag & BBBIO_PINMUX_SLEWCTRL) && (ret == 0)) {
 		reg_tmp = reg_value & BBBIO_PINMUX_SLEWCTRL;
 		Cflag_tmp = (Cflag >> 8) & BBBIO_PINMUX_SLEWCTRL;
 		ret = reg_tmp ^ Cflag_tmp;

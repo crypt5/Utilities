@@ -208,8 +208,9 @@ void config_load_file(CONFIG* c,char* filename)
   }
 
   while(fgets(buf,1024,file)){
-    if(buf[0]=='#'||buf[0]=='\n')
+    if(buf[0]=='#'||buf[0]=='\n'){
       ;
+    }
     else{
       strip_newline(buf);
       switch(buf[0]){

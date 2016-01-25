@@ -10,7 +10,7 @@ GRAPHICS_SRC=$(wildcard Graphics/code/graphics_*.c)
 GRAPHICS_INC=-IGraphics/headers/
 GRAPHICS_OBJ=$(addprefix Graphics/objects/,$(notdir $(GRAPHICS_SRC:.c=.o)))
 
-IO_SRC=$(wildcard BBBio/*.c)
+IO_SRC=$(wildcard BBBio/*.c) 
 IO_OBJ=$(IO_SRC:.c=.o)
 
 LIBS=-lgraphics -llogger -lconfig -lBBBio -ldata_logger
