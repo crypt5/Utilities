@@ -14,7 +14,7 @@
 
 
 void destroy_gui(GUI* g);
-WIDGET* get_at_coords(LIST* widgets,int x, int y);
+WIDGET* get_at_coords(SORTED_LIST* widgets,int x, int y);
 char process_keystroke(GUI* g, XKeyEvent* e);
 
 int to_gray(int color)
@@ -61,6 +61,13 @@ int window_comp(void* one, void* two)
 }
 
 void fake_free(void* data){}
+
+int widget_compare(void* one, void* two)
+{
+	WIDGET* o=(WIDGET*)one;
+	WIDGET* t=(WIDGET*)two;
+	return (o->z_order)-(t->z_order);
+}
 
 void* event_loop(void* data)
 {
@@ -177,16 +184,16 @@ void* event_loop(void* data)
 	//break;
       case MapNotify: 
 	if(win==g->mainWindow){
-	  list_walk_reset(g->widgets);
-	  while((temp=(WIDGET*)list_get_next(g->widgets))!=NULL){
+	  sorted_list_walk_reset(g->widgets);
+	  while((temp=(WIDGET*)sorted_list_get_next(g->widgets))!=NULL){
 	    temp->paint(g,win,temp);
 	  }
 	}
 	else{
 	  win_data=list_get(g->windows,&win); 
 	  if(win_data!=NULL){
-	    list_walk_reset(win_data->widgets);
-	    while((temp=(WIDGET*)list_get_next(win_data->widgets))!=NULL){
+	    sorted_list_walk_reset(win_data->widgets);
+	    while((temp=(WIDGET*)sorted_list_get_next(win_data->widgets))!=NULL){
 		  temp->paint(g,win,temp);
 	    }
 	  }
@@ -257,7 +264,7 @@ GUI* init_gui(char* address)
   g->wm_protocols = XInternAtom(g->dsp, "WM_PROTOCOLS", False);
   g->wm_delete_window = XInternAtom(g->dsp, "WM_DELETE_WINDOW", False);
 
-  g->widgets=list_init(fake_free,NULL);
+  g->widgets=sorted_list_init(fake_free,widget_compare);
   g->updates=init_queue(fake_free);
   g->windows=list_init(fake_free,window_comp);
 
@@ -308,14 +315,14 @@ void destroy_gui(GUI* g)
   re=pthread_mutex_destroy(&g->lock);
   if(re!=0)
     printf("Mutex Destroy Failed\n");
-  for(re=0;re<list_length(g->widgets);re++){
-    w=list_get_pos(g->widgets,re);
+  for(re=0;re<sorted_list_length(g->widgets);re++){
+    w=sorted_list_get_pos(g->widgets,re);
     w->ufree(g,w);
   }
   for(re=0;re<list_length(g->windows);re++)
     destroy_window(g,list_get_pos(g->windows,re));
   list_destroy(g->windows);
-  list_destroy(g->widgets);
+  sorted_list_destroy(g->widgets);
   destroy_queue(g->updates);
   XFreeFont(g->dsp,g->font);
   XFreeGC(g->dsp,g->text);
@@ -421,16 +428,16 @@ void add_to_main(GUI* g,WIDGET* w)
     printf("Widget is NULL, Can't add\n");
     exit(-1);
   }
-  list_add_tail(g->widgets,w);
+  sorted_list_add(g->widgets,w);
 }
 
 
 
-WIDGET* get_at_coords(LIST* widgets,int x, int y)
+WIDGET* get_at_coords(SORTED_LIST* widgets,int x, int y)
 {
   WIDGET* temp=NULL;
-  list_walk_reset(widgets);
-  while((temp=list_get_next(widgets))!=NULL){
+  sorted_list_walk_reset(widgets);
+  while((temp=sorted_list_get_next(widgets))!=NULL){
     if((temp->flags!=NONE)&&((temp->status&STATUS_VISIBLE)>0)&&((temp->status&STATUS_ENABLE)>0)){
       if(x>temp->x&&x<temp->x+temp->width){
 	if(y>temp->y&&y<temp->y+temp->height){
@@ -549,8 +556,8 @@ void refresh_main_window(GUI* g)
   pthread_mutex_lock(&g->lock);
   XClearWindow(g->dsp,g->mainWindow);
   int i;
-  for(i=0;i<list_length(g->widgets);i++)
-    enqueue(g->updates,list_get_pos(g->widgets,i));
+  for(i=0;i<sorted_list_length(g->widgets);i++)
+    enqueue(g->updates,sorted_list_get_pos(g->widgets,i));
   pthread_mutex_unlock(&g->lock);
 }
 

@@ -60,6 +60,7 @@ WIDGET* create_seperator(int x,int y,int width)
   w->y=y;
   w->height=0;
   w->width=width;
+  w->z_order=0;
   w->call=NULL;
   w->paint=paint_seperator;
   w->click=NULL;

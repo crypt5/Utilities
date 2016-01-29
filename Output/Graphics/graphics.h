@@ -2,6 +2,7 @@
 #define GRAPHICS_H_
 
 #include <X11/Xlib.h>
+#include "sorted_list.h"
 #include "link.h"
 #include "queue.h"
 
@@ -26,7 +27,7 @@ struct graphics_t{
   int run;
   Atom wm_protocols;
   Atom wm_delete_window;
-  LIST* widgets;
+  SORTED_LIST* widgets;
   QUEUE* updates;
   GC text;
   GC draw;

@@ -51,7 +51,8 @@ void paint_combobox(GUI* g,Window win,WIDGET* w)
 
 void paint_combobox_clicked(GUI* g, Window win,WIDGET* w)
 {
-  printf("Click\n");
+	//struct combobox_data_t* data=w->widget_data;
+	//TODO Paint dropdown menu and save data in the back
 }
 
 WIDGET* create_combobox(int display_width,int x,int y,char*(*ustring)(void* uitem))
@@ -82,7 +83,7 @@ WIDGET* create_combobox(int display_width,int x,int y,char*(*ustring)(void* uite
   data->max_display=10;
   data->number_items=0;
   data->max_length=display_width;
-  data->selected=-1;
+  data->selected=0;
   data->items=NULL;
   data->get_string=ustring;
 
@@ -93,6 +94,7 @@ WIDGET* create_combobox(int display_width,int x,int y,char*(*ustring)(void* uite
   w->y=y;
   w->height=0;
   w->width=0;
+  w->z_order=1;
   w->call=NULL;
   w->paint=paint_combobox;
   w->click=paint_combobox_clicked;

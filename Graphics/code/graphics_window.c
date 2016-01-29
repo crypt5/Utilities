@@ -16,6 +16,13 @@
 
 void fake_free2(void* data){}
 
+int widget_compare2(void* one, void* two)
+{
+	WIDGET* o=(WIDGET*)one;
+	WIDGET* t=(WIDGET*)two;
+	return (o->z_order)-(t->z_order);
+}
+
 WINDOW* create_window(GUI* g,char* title, int bgColor)
 {
   WINDOW* w=NULL;
@@ -41,7 +48,7 @@ WINDOW* create_window(GUI* g,char* title, int bgColor)
     XStoreName(g->dsp,w->w,title);
   else
     XStoreName(g->dsp,w->w,"No Title");
-  w->widgets=list_init(fake_free2,NULL);
+  w->widgets=sorted_list_init(fake_free2,widget_compare2);
   w->updates=init_queue(fake_free2);
   XSetWMProtocols(g->dsp, w->w, &g->wm_delete_window, 1);
   
@@ -61,12 +68,12 @@ void destroy_window(GUI* g,WINDOW* win)
     exit(-1);
   }
   
-  for(i=0;i<list_length(win->widgets);i++){
-    w=list_get_pos(win->widgets,i);
+  for(i=0;i<sorted_list_length(win->widgets);i++){
+    w=sorted_list_get_pos(win->widgets,i);
     w->ufree(g,w);
   }
   
-  list_destroy(win->widgets);
+  sorted_list_destroy(win->widgets);
   destroy_queue(win->updates);
   free(win);
   win=NULL;
@@ -148,7 +155,7 @@ void add_widget_to_window(WINDOW* win, WIDGET* w)
     printf("Widget is NULL, Can't add\n");
     exit(-1);
   }
-  list_add_tail(win->widgets,w);
+  sorted_list_add(win->widgets,w);
 }
 
 void update_window_widget(WINDOW* win, WIDGET* w)
@@ -177,8 +184,8 @@ void refresh_window(GUI* g,WINDOW* win)
   pthread_mutex_lock(&g->lock);
   XClearWindow(g->dsp,win->w);
   int i;
-  for(i=0;i<list_length(win->widgets);i++)
-    enqueue(win->updates,list_get_pos(win->widgets,i));
+  for(i=0;i<sorted_list_length(win->widgets);i++)
+    enqueue(win->updates,sorted_list_get_pos(win->widgets,i));
   pthread_mutex_unlock(&g->lock);
 }
 

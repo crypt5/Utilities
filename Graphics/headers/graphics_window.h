@@ -2,7 +2,7 @@
 #define GRAPHICS_WINDOW_H_
 
 #include <X11/Xlib.h>
-#include "link.h"
+#include "sorted_list.h"
 #include "queue.h"
 
 #define POPUP_TYPE_INFO 1
@@ -12,7 +12,7 @@
 typedef struct window_t WINDOW;
 struct window_t{
   Window w;
-  LIST* widgets;
+  SORTED_LIST* widgets;
   QUEUE* updates;
 };
 

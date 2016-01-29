@@ -219,6 +219,7 @@ WIDGET* create_textfield(int x,int y,int max_length)
   w->y=y;
   w->height=0;
   w->width=0;
+  w->z_order=0;
   w->call=NULL;
   w->paint=paint_textfield;
   w->click=paint_textfield_click;
