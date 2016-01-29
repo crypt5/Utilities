@@ -19,9 +19,9 @@ XFLAGS=`pkg-config --libs x11`
 LINKCOM=-IOutput -IOutput/Graphics -IOutput/BBBio -LOutput -LOutput/Graphics -LOutput/BBBio
 
 all: config logger graphics BBBio data_logger test
-
+	
 #Build Test code
-test: test.c
+test: sort test.c
 	$(CC) $(CFLAGS) $(LINKCOM) $(RPATH) test.c -o main $(LIBS)
 
 #Data Structure(s) Build
@@ -32,7 +32,11 @@ link: $(STRUCT)link.c $(STRUCT)link.h
 queue: $(STRUCT)queue.c $(STRUCT)queue.h
 	$(CC) $(CFLAGS) $(OFLAGS) $(STRUCT)queue.c -o $(STRUCT)queue.o
 	cp $(STRUCT)queue.h Output/queue.h
-
+	
+sort: $(STRUCT)sorted_list.c $(STRUCT)sorted_list.h
+	$(CC) $(CFLAGS) $(OFLAGS) $(STRUCT)sorted_list.c -o $(STRUCT)sorted_list.o
+	cp $(STRUCT)sorted_list.h Output/sorted_list.h
+	
 #BBB gpio Library
 BBBio: $(IO_OBJ)
 	mkdir -p Output/BBBio
@@ -60,7 +64,7 @@ data_logger: queue Logger/data_logger.c Logger/data_logger.h
 	$(CC) -shared -o Output/libdata_logger.so Logger/data_logger.o $(STRUCT)queue.o -lpthread
 	cp Logger/data_logger.h Output/data_logger.h
 #Graphics Build
-graphics: link $(GRAPHICS_OBJ) $(GRAPHC)graphics.c
+graphics: link sort $(GRAPHICS_OBJ) $(GRAPHC)graphics.c
 	mkdir -p Output/Graphics
 	$(CC) $(CFLAGS) $(OFLAGS) $(GRAPHICS_INC) $(GRAPHC)graphics.c -o $(GRAPHO)graphics.o
 	$(CC) -shared -o Output/Graphics/libgraphics.so $(GRAPHICS_OBJ) $(STRUCT)link.o $(GRAPHO)graphics.o -lpthread -lXpm $(XFALGS)
