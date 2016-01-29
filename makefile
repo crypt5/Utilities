@@ -3,7 +3,7 @@ GRAPHC=Graphics/code/
 GRAPHO=Graphics/objects/
 
 CC=clang
-CFLAGS=-g -Wall
+CFLAGS=-g -Wall -std=gnu11
 OFLAGS=-c -fPIC -I$(STRUCT)
 
 GRAPHICS_SRC=$(wildcard Graphics/code/graphics_*.c)
