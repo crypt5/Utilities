@@ -33,6 +33,8 @@
 
 typedef struct graphics_widget_t WIDGET;
 #include "graphics.h"
+
+
 typedef void(*callback)(GUI* g,WIDGET* self,void* data);
 typedef void(*painter)(GUI* g,Window win, WIDGET* w);
 typedef void(*on_click)(GUI* g,Window win, WIDGET* w);
@@ -48,6 +50,7 @@ struct graphics_widget_t{
   int y;
   int height;
   int width;
+  int z_order;
   callback call;     //Button Press callback
   painter paint;     //Function to paint widget
   on_click click;    //Function to paint when widget is clicked

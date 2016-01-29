@@ -18,10 +18,11 @@ RPATH=-Wl,-rpath,Output,-rpath,Output/Graphics,-rpath,Output/BBBio
 XFLAGS=`pkg-config --libs x11`
 LINKCOM=-IOutput -IOutput/Graphics -IOutput/BBBio -LOutput -LOutput/Graphics -LOutput/BBBio
 
+
 all: config logger graphics BBBio data_logger test
 	
 #Build Test code
-test: sort test.c
+test: test.c
 	$(CC) $(CFLAGS) $(LINKCOM) $(RPATH) test.c -o main $(LIBS)
 
 #Data Structure(s) Build
@@ -63,11 +64,12 @@ data_logger: queue Logger/data_logger.c Logger/data_logger.h
 	$(CC) $(CFLAGS) $(OFLAGS) Logger/data_logger.c -o Logger/data_logger.o
 	$(CC) -shared -o Output/libdata_logger.so Logger/data_logger.o $(STRUCT)queue.o -lpthread
 	cp Logger/data_logger.h Output/data_logger.h
+	
 #Graphics Build
 graphics: link sort $(GRAPHICS_OBJ) $(GRAPHC)graphics.c
 	mkdir -p Output/Graphics
 	$(CC) $(CFLAGS) $(OFLAGS) $(GRAPHICS_INC) $(GRAPHC)graphics.c -o $(GRAPHO)graphics.o
-	$(CC) -shared -o Output/Graphics/libgraphics.so $(GRAPHICS_OBJ) $(STRUCT)link.o $(GRAPHO)graphics.o -lpthread -lXpm $(XFALGS)
+	$(CC) -shared -o Output/Graphics/libgraphics.so $(GRAPHICS_OBJ) $(STRUCT)link.o $(STRUCT)sorted_list.o $(GRAPHO)graphics.o -lpthread -lXpm $(XFALGS)
 	cp Graphics/headers/*.h Output/Graphics/
 
 $(GRAPHICS_OBJ): $(GRAPHICS_SRC)

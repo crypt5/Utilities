@@ -148,6 +148,7 @@ WIDGET* create_button(char* text, int x, int y)
   w->y=y;
   w->height=0;
   w->width=0;
+  w->z_order=0;
   w->call=NULL;
   w->paint=paint_button;
   w->click=paint_click;

@@ -139,6 +139,7 @@ WIDGET* create_label(char* message,int x, int y)
   w->y=y;
   w->width=0;
   w->height=0;
+  w->z_order=0;
   w->call=NULL;
   w->paint=paint_label;
   w->click=NULL;

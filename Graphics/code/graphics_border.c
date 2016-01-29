@@ -60,6 +60,7 @@ WIDGET* create_simple_border(int x,int y,int height,int width)
   w->y=y;
   w->height=height;
   w->width=width;
+  w->z_order=0;
   w->call=NULL;
   w->paint=paint_border;
   w->click=NULL;

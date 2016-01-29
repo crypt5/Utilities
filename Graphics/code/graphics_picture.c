@@ -67,6 +67,7 @@ WIDGET* create_picture(GUI* g,char* filename,int x,int y)
   w->y=y;
   w->height=(int)height;
   w->width=(int)width;
+  w->z_order=0;
   w->call=NULL;
   w->paint=paint_picture;
   w->select=NULL;
