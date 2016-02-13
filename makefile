@@ -13,11 +13,7 @@ XFLAGS=`pkg-config --libs x11`
 LINKCOM=-IOutput -IOutput/BBBio -LOutput -LOutput/BBBio
 
 
-all: config logger BBBio data_logger test
-
-#Build Test code
-test: test.c
-	$(CC) $(CFLAGS) $(LINKCOM) $(RPATH) test.c -o main $(LIBS)
+all: config logger BBBio data_logger
 
 #Data Structure(s) Build
 link: $(STRUCT)link.c $(STRUCT)link.h
