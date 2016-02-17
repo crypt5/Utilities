@@ -253,6 +253,7 @@ int config_load_file(CONFIG* c, char* filename) {
         }
     }
     fclose(file);
+    return 0;
 }
 
 /**
@@ -327,7 +328,7 @@ double config_get_double(CONFIG* c, char* key) {
  * gets an string with the set key
  * @param c - The config to use
  * @param key - The key to look for
- * @return VALUE_NOT_FOUND if c is NULL or the value is not found
+ * @return NULL if c is NULL or the value is not found
  * the value otherwise
  */
 char* config_get_string(CONFIG* c, char* key) {
@@ -335,12 +336,12 @@ char* config_get_string(CONFIG* c, char* key) {
     char* re = NULL;
 
     if (c == NULL) {
-        return VALUE_NOT_FOUND;
+      return NULL;
     }
 
     node = list_get(c->list, my_comp, key);
     if (node == NULL)
-        return (char*) VALUE_NOT_FOUND;
+      return NULL;
 
     if (node->type != 'S')
         printf("Requested STRING by '%s' is not type STRING\n", key);
