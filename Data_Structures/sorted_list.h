@@ -37,7 +37,7 @@ void* sorted_list_get(SORTED_LIST* l, void* lookfor);
  * @return NULL if the LIST is NULL or index > number of elements,
  * a pointer to the data at the index position otherwise
  */
-void* sorted_list_get_pos(SORTED_LIST* l, int index);
+void* sorted_list_get_pos(SORTED_LIST* l, unsigned int index);
 
 /**
  * Deletes an element for the sorted list
@@ -46,7 +46,7 @@ void* sorted_list_get_pos(SORTED_LIST* l, int index);
  * @return -1 if LIST is NULL, 0 if element is deleted,
  * 1 if the element is not found
  */
-void sorted_list_delete(SORTED_LIST* l, void* lookfor);
+int sorted_list_delete(SORTED_LIST* l, void* lookfor);
 
 /**
  * Gets the length of the list
