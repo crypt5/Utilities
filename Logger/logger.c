@@ -165,6 +165,11 @@ int logger_log(LOGGER *log, const char* message)
                 log->buf_1_pos = log->buf_1_pos + strlen(buf);
                 strcat(log->buffer1, buf);
             } else {
+                if (log->buf_2_pos != 0) { //Both buffers are full. Dump data NOW
+                    fprintf(log->log, "%s", log->buffer2);
+                    log->buffer2[0] = 0;
+                    log->buf_2_pos = 0;
+                }
                 int dif = log->buf_size - log->buf_1_pos - 1;
                 strncat(log->buffer1, buf, dif);
                 log->buf_1_pos = log->buf_size;
@@ -177,6 +182,11 @@ int logger_log(LOGGER *log, const char* message)
                 log->buf_2_pos = log->buf_2_pos + strlen(buf);
                 strcat(log->buffer2, buf);
             } else {
+                if (log->buf_1_pos != 0) { //Both buffers are full. Dump data NOW
+                    fprintf(log->log, "%s", log->buffer1);
+                    log->buffer1[0] = 0;
+                    log->buf_1_pos = 0;
+                }
                 int dif = log->buf_size - log->buf_2_pos - 1;
                 strncat(log->buffer2, buf, dif);
                 log->buf_2_pos = log->buf_size;
@@ -203,6 +213,11 @@ int logger_log(LOGGER *log, const char* message)
                 log->buf_1_pos = log->buf_1_pos + strlen(string);
                 strcat(log->buffer1, string);
             } else {
+                if (log->buf_2_pos != 0) { //Both buffers are full. Dump data NOW
+                    fprintf(log->log, "%s", log->buffer2);
+                    log->buffer2[0] = 0;
+                    log->buf_2_pos = 0;
+                }
                 int dif = log->buf_size - log->buf_1_pos - 1;
                 strncat(log->buffer1, string, dif);
                 log->buf_1_pos = log->buf_size;
@@ -215,6 +230,11 @@ int logger_log(LOGGER *log, const char* message)
                 log->buf_2_pos = log->buf_2_pos + strlen(string);
                 strcat(log->buffer2, string);
             } else {
+                if (log->buf_1_pos != 0) { //Both buffers are full. Dump data NOW
+                    fprintf(log->log, "%s", log->buffer1);
+                    log->buffer1[0] = 0;
+                    log->buf_1_pos = 0;
+                }
                 int dif = log->buf_size - log->buf_2_pos - 1;
                 strncat(log->buffer2, string, dif);
                 log->buf_2_pos = log->buf_size;
