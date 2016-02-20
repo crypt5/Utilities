@@ -8,7 +8,8 @@ typedef struct data_logger_t DATA_LOGGER;
  * @param filename - The filename to use for logging
  * @return DATA_LOGGER* on success, NULL on failure
  */
-DATA_LOGGER *data_logger_init(char* filename);
+DATA_LOGGER *data_logger_init(const char* filename, unsigned int buffer_size,
+        unsigned int update_int);
 
 /**
  * Adds the message to the logging queue
