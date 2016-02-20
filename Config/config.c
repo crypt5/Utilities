@@ -5,16 +5,17 @@
 #include "link.h"
 
 struct key_value_t {
-    char type;
-    char* key;
-    void* value;
+        char type;
+        char* key;
+        void* value;
 };
 
 struct config_t {
-    LIST* list;
+        LIST* list;
 };
 
-void strip_newline(char* buf) {
+void strip_newline(char* buf)
+{
     int i;
     for (i = 0; i < strlen(buf); i++) {
         if (buf[i] == '\n')
@@ -22,7 +23,8 @@ void strip_newline(char* buf) {
     }
 }
 
-struct key_value_t* process_int(char* buf) {
+struct key_value_t* process_int(char* buf)
+{
     struct key_value_t* node = NULL;
     char* node_key = NULL;
     int* node_value = NULL;
@@ -54,7 +56,8 @@ struct key_value_t* process_int(char* buf) {
 
 }
 
-struct key_value_t* process_double(char* buf) {
+struct key_value_t* process_double(char* buf)
+{
     struct key_value_t* node = NULL;
     char* node_key = NULL;
     double* node_value = NULL;
@@ -85,7 +88,8 @@ struct key_value_t* process_double(char* buf) {
 
 }
 
-struct key_value_t* process_string(char* buf) {
+struct key_value_t* process_string(char* buf)
+{
     struct key_value_t* node = NULL;
     char* node_key = NULL;
     char* node_value = NULL;
@@ -116,7 +120,8 @@ struct key_value_t* process_string(char* buf) {
     return node;
 }
 
-struct key_value_t* process_boolean(char* buf) {
+struct key_value_t* process_boolean(char* buf)
+{
     struct key_value_t* node = NULL;
     char* node_key = NULL;
     char* node_value = NULL;
@@ -149,7 +154,8 @@ struct key_value_t* process_boolean(char* buf) {
     return node;
 }
 
-void my_free(void* data) {
+void my_free(void* data)
+{
     struct key_value_t* d = NULL;
     d = (struct key_value_t*) data;
     free(d->key);
@@ -159,7 +165,8 @@ void my_free(void* data) {
 
 /* void* one is a string, while void* two */
 /* is the struct */
-int my_comp(void* one, void* two) {
+int my_comp(void* one, void* two)
+{
     struct key_value_t* t = NULL;
     t = (struct key_value_t*) two;
     return strcmp((char*) one, t->key);
@@ -169,7 +176,8 @@ int my_comp(void* one, void* two) {
  * Creates the config object to be used later
  * @return CONFIG* on success, NULL otherwise
  */
-CONFIG* config_init() {
+CONFIG* config_init()
+{
     CONFIG* c = NULL;
     LIST* l = NULL;
     c = malloc(sizeof(CONFIG));
@@ -191,7 +199,8 @@ CONFIG* config_init() {
  * @return -1 in CONFIG is NULL, -2 if the file doesn't exist,
  *
  */
-int config_load_file(CONFIG* c, char* filename) {
+int config_load_file(CONFIG* c, char* filename)
+{
     FILE* file = NULL;
     char buf[1024];
 
@@ -262,12 +271,13 @@ int config_load_file(CONFIG* c, char* filename) {
  * @return -1 if c is NULL, -2 if data freeing failed
  * and 0 on success
  */
-int config_destroy(CONFIG* c) {
+int config_destroy(CONFIG* c)
+{
     if (c == NULL) {
         return -1;
     }
-    int re=list_destroy(c->list);
-    if(re==0){
+    int re = list_destroy(c->list);
+    if (re == 0) {
         free(c);
         return 0;
     }
@@ -281,7 +291,8 @@ int config_destroy(CONFIG* c) {
  * @return VALUE_NOT_FOUND if c is NULL or teh value is not found
  * the value otherwise
  */
-int config_get_int(CONFIG* c, char* key) {
+int config_get_int(CONFIG* c, char* key)
+{
     struct key_value_t* node = NULL;
     int* re = NULL;
 
@@ -306,7 +317,8 @@ int config_get_int(CONFIG* c, char* key) {
  * @return VALUE_NOT_FOUND if c is NULL or teh value is not found
  * the value otherwise
  */
-double config_get_double(CONFIG* c, char* key) {
+double config_get_double(CONFIG* c, char* key)
+{
     struct key_value_t* node = NULL;
     double* re = NULL;
 
@@ -331,17 +343,18 @@ double config_get_double(CONFIG* c, char* key) {
  * @return NULL if c is NULL or the value is not found
  * the value otherwise
  */
-char* config_get_string(CONFIG* c, char* key) {
+char* config_get_string(CONFIG* c, char* key)
+{
     struct key_value_t* node = NULL;
     char* re = NULL;
 
     if (c == NULL) {
-      return NULL;
+        return NULL;
     }
 
     node = list_get(c->list, my_comp, key);
     if (node == NULL)
-      return NULL;
+        return NULL;
 
     if (node->type != 'S')
         printf("Requested STRING by '%s' is not type STRING\n", key);
@@ -356,7 +369,8 @@ char* config_get_string(CONFIG* c, char* key) {
  * @return VALUE_NOT_FOUND if c is NULL or the value is not found
  * the value otherwise
  */
-int config_get_boolean(CONFIG* c, char* key) {
+int config_get_boolean(CONFIG* c, char* key)
+{
     struct key_value_t* node = NULL;
     int re;
 

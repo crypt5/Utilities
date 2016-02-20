@@ -5,7 +5,6 @@
 #include <string.h>
 #include <time.h>
 #include "logger.h"
-#include "queue.h"
 
 struct logger_t {
         pthread_mutex_t lock;

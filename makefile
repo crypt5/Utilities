@@ -10,13 +10,16 @@ IO_SRC=$(wildcard BBBio/*.c)
 IO_OBJ=$(IO_SRC:.c=.o)
 
 
-all: config logger BBBio data_logger test
+all: data config logger BBBio data_logger
 
 # Compile command for test File
 test: test.c
 	$(CC) $(CFLAGS) test.c -o main -ldata_logger
 
 #Data Structure(s) Build
+data: link queue sort
+	$(CC) -shared -o libdata.so link.o queue.o sorted_list.o
+
 link: $(STRUCT)link.c $(STRUCT)link.h
 	$(CC) $(CFLAGS) $(OFLAGS) $(STRUCT)link.c -o link.o
 
@@ -34,7 +37,7 @@ $(IO_OBJ): $(IO_SRC)
 	$(CC) $(CFLAGS) $(OFLAGS) $(subst .o,.c,$@) -o $@
 
 #Config Builder
-config: link Config/config.c Config/config.h
+config: data Config/config.c Config/config.h
 	$(CC) $(CFLAGS) $(OFLAGS) Config/config.c -o config.o
 	$(CC)  -shared -o libconfig.so config.o link.o 
 
@@ -56,9 +59,14 @@ clean:
 	rm BBBio/*.o
 
 # Will install everything
-install: install-BBBio install-config install-logger install-data_logger
+install: install-data install-BBBio install-config install-logger install-data_logger
 
-# Puts the BBBio library files in the right place
+# Puts the library files in the right place
+install-data: data
+	cp libdata.so $(INSTALL)/lib
+	mkdir -p $(INSTALL)/include/kenutil
+	cp Data_Structures/*.h $(INSTALL)/include/kenutil
+	
 install-BBBio: BBBio
 	cp libBBBio.so $(INSTALL)/lib/
 	mkdir -p $(INSTALL)/include/BBBio
@@ -68,16 +76,14 @@ install-config: config
 	cp libconfig.so $(INSTALL)/lib
 	mkdir -p $(INSTALL)/include/kenutil
 	cp Config/*.h $(INSTALL)/include/kenutil
-	cp Data_Structures/*.h $(INSTALL)/include/kenutil
 
 install-logger: logger
 	cp liblogger.so $(INSTALL)/lib
 	mkdir -p $(INSTALL)/include/kenutil
 	cp Logger/*.h $(INSTALL)/include/kenutil
-	cp Data_Structures/*.h $(INSTALL)/include/kenutil
 
 install-data_logger: data_logger
 	cp libdata_logger.so $(INSTALL)/lib
 	mkdir -p $(INSTALL)/include/kenutil
 	cp Logger/*.h $(INSTALL)/include/kenutil
-	cp Data_Structures/*.h $(INSTALL)/include/kenutil
+

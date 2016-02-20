@@ -3,9 +3,7 @@
 #include <unistd.h>
 #include <pthread.h>
 #include <string.h>
-#include <time.h>
 #include "data_logger.h"
-#include "queue.h"
 
 struct data_logger_t {
         pthread_mutex_t lock;
