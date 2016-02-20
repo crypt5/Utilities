@@ -39,7 +39,7 @@ $(IO_OBJ): $(IO_SRC)
 #Config Builder
 config: data Config/config.c Config/config.h
 	$(CC) $(CFLAGS) $(OFLAGS) Config/config.c -o config.o
-	$(CC)  -shared -o libconfig.so config.o link.o 
+	$(CC)  -shared -o libconfig.so config.o -ldata
 
 #Logger Builder 
 logger: Logger/logger.c Logger/logger.h  
