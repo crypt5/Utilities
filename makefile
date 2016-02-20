@@ -10,7 +10,11 @@ IO_SRC=$(wildcard BBBio/*.c)
 IO_OBJ=$(IO_SRC:.c=.o)
 
 
-all: config logger BBBio data_logger
+all: config logger BBBio data_logger test
+
+# Compile command for test File
+test: test.c
+	$(CC) $(CFLAGS) test.c -o main -llogger
 
 #Data Structure(s) Build
 link: $(STRUCT)link.c $(STRUCT)link.h
@@ -37,7 +41,7 @@ config: link Config/config.c Config/config.h
 #Logger Builder 
 logger: queue Logger/logger.c Logger/logger.h  
 	$(CC) $(CFLAGS) $(OFLAGS) Logger/logger.c -o logger.o
-	$(CC) -shared -o liblogger.so logger.o queue.o -lpthread
+	$(CC) -shared -o liblogger.so logger.o -lpthread
 
 #Data Logger Builder 
 data_logger: queue Logger/data_logger.c Logger/data_logger.h  
