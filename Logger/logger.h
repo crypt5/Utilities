@@ -11,7 +11,8 @@ typedef struct logger_t LOGGER;
  * @return LOGGER* on success, NULL if malloc,
  * mutex, or thread creation failed
  */
-LOGGER *logger_init(const char* filename, unsigned int buffer_size);
+LOGGER *logger_init(const char* filename, unsigned int buffer_size,
+        unsigned int update_int);
 
 /**
  * Adds the message to the logger queue
