@@ -153,7 +153,6 @@ int logger_log(LOGGER *log, const char* message)
     time_out[strlen(time_out) - 1] = '\0';
 
     if ((strlen(time_out) + strlen(message) + 4) > 1024) {
-        printf("Allocating String\n");
         buf = malloc(sizeof(char) * (strlen(time_out) + strlen(message) + 4));
         if (buf == NULL)
             return -2;

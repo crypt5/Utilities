@@ -14,7 +14,7 @@ all: config logger BBBio data_logger test
 
 # Compile command for test File
 test: test.c
-	$(CC) $(CFLAGS) test.c -o main -llogger
+	$(CC) $(CFLAGS) test.c -o main -ldata_logger
 
 #Data Structure(s) Build
 link: $(STRUCT)link.c $(STRUCT)link.h
@@ -39,14 +39,14 @@ config: link Config/config.c Config/config.h
 	$(CC)  -shared -o libconfig.so config.o link.o 
 
 #Logger Builder 
-logger: queue Logger/logger.c Logger/logger.h  
+logger: Logger/logger.c Logger/logger.h  
 	$(CC) $(CFLAGS) $(OFLAGS) Logger/logger.c -o logger.o
 	$(CC) -shared -o liblogger.so logger.o -lpthread
 
 #Data Logger Builder 
-data_logger: queue Logger/data_logger.c Logger/data_logger.h  
+data_logger: Logger/data_logger.c Logger/data_logger.h  
 	$(CC) $(CFLAGS) $(OFLAGS) Logger/data_logger.c -o data_logger.o
-	$(CC) -shared -o libdata_logger.so data_logger.o queue.o -lpthread
+	$(CC) -shared -o libdata_logger.so data_logger.o -lpthread
 
 
 # Removes all compiled files
