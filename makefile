@@ -14,7 +14,7 @@ all: data config logger BBBio data_logger
 
 # Compile command for test File
 test: test.c
-	$(CC) $(CFLAGS) test.c -o main -ldata_logger
+	$(CC) $(CFLAGS) test.c -o main -ldata
 
 #Data Structure(s) Build
 data: link queue sort stack

@@ -72,7 +72,7 @@
 			<target name="Valgrind" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
 				<buildCommand>valgrind</buildCommand>
 				<buildArguments>--leak-check=full --show-reachable=yes --track-origins=yes ./main</buildArguments>
-				<buildTarget>Valgrind</buildTarget>
+				<buildTarget/>
 				<stopOnError>true</stopOnError>
 				<useDefaultCommand>false</useDefaultCommand>
 				<runAllBuilders>true</runAllBuilders>
@@ -80,13 +80,14 @@
 			<target name="Force Rebuild" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
 				<buildCommand>sudo</buildCommand>
 				<buildArguments>make -B install clean</buildArguments>
+				<buildTarget/>
 				<stopOnError>true</stopOnError>
 				<useDefaultCommand>false</useDefaultCommand>
 				<runAllBuilders>true</runAllBuilders>
 			</target>
 			<target name="Test" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
 				<buildCommand>make</buildCommand>
-				<buildArguments>-B</buildArguments>
+				<buildArguments/>
 				<buildTarget>test</buildTarget>
 				<stopOnError>true</stopOnError>
 				<useDefaultCommand>false</useDefaultCommand>
