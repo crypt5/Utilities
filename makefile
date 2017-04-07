@@ -17,8 +17,8 @@ test: test.c
 	$(CC) $(CFLAGS) test.c -o main -ldata_logger
 
 #Data Structure(s) Build
-data: link queue sort
-	$(CC) -shared -o libdata.so link.o queue.o sorted_list.o
+data: link queue sort stack
+	$(CC) -shared -o libdata.so link.o queue.o sorted_list.o stack.o
 
 link: $(STRUCT)link.c $(STRUCT)link.h
 	$(CC) $(CFLAGS) $(OFLAGS) $(STRUCT)link.c -o link.o
@@ -29,6 +29,10 @@ queue: $(STRUCT)queue.c $(STRUCT)queue.h
 sort: $(STRUCT)sorted_list.c $(STRUCT)sorted_list.h
 	$(CC) $(CFLAGS) $(OFLAGS) $(STRUCT)sorted_list.c -o sorted_list.o
 
+stack: $(STRUCT)stack.c $(STRUCT)stack.h
+	$(CC) $(CFLAGS) $(OFLAGS) $(STRUCT)stack.c -o stack.o
+	
+	
 #BBB gpio Library
 BBBio: $(IO_OBJ)
 	$(CC) -shared -o libBBBio.so $(IO_OBJ)
@@ -54,9 +58,8 @@ data_logger: Logger/data_logger.c Logger/data_logger.h
 
 # Removes all compiled files
 clean:
-	rm *.so
-	rm *.o
-	rm BBBio/*.o
+	rm -rf *.so
+	rm -rf *.o
 
 # Will install everything
 install: install-data install-BBBio install-config install-logger install-data_logger
